@@ -4127,6 +4127,16 @@ window.TextInputField = TextInputField;
 //=============================================================================
 
 //-----------------------------------------------------------------------------
+  $.expand( Bitmap, 'loadBase64', function( string )
+  { // Definition.
+//-----------------------------------------------------------------------------
+
+    return Bitmap.load( string );
+
+
+  }, true );
+
+//-----------------------------------------------------------------------------
   $.expand( Bitmap, 'drawRoundedRect', function( x, y, width, height, radius, color )
   { // Aliased drawRoundedRect of class Bitmap.
 //-----------------------------------------------------------------------------
@@ -4149,6 +4159,7 @@ window.TextInputField = TextInputField;
       this.fillRect( x, y + radius, width, height - circ, color );
 
   }, false );
+
 
   window.addEventListener('keydown', $.processKeyInput.bind( $ ) );
 

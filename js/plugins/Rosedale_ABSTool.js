@@ -60,255 +60,6 @@
 */
 
 //=============================================================================
-// Scene_ProjectSelect :
-//=============================================================================
-
-//=============================================================================
-class Scene_ProjectSelect extends Scene_Base
-{ // Scene_ProjectSelect
-
-//=============================================================================
-  constructor()
-  { // Called on object creation.
-//=============================================================================
-
-    super();
-    this._projectIndex = -1;
-
-  }
-
-//=============================================================================
-  create()
-  { // create the elemets of the scene.
-//=============================================================================
-
-    this.createTitleField();
-    this.createProjectSelectList();
-    this.createOptionsList();
-
-  }
-
-//=============================================================================
-  createTitleField()
-  { // create the title field.
-//=============================================================================
-
-    const x = 0;
-    const y = 0;
-    const width = Graphics.width;
-    const height = 32;
-
-    this._titleContainer = new ContainerField( new Rectangle( x, y, width, height ) );
-    this.addChild( this._titleContainer );
-
-    const label = new LabelField( 'Select or add a project.' );
-    this._titleContainer.addElement( label );
-    this._titleContainer._textLabel = label;
-    label.position.set( 4, 4 );
-
-  }
-
-//=============================================================================
-  createProjectSelectList()
-  { // create the container for project select.
-//=============================================================================
-
-    this._projects = JsonEx.parse( localStorage.absProjects || '[]' );
-
-    const x = this._titleContainer.x;
-    const y = this._titleContainer.y + this._titleContainer.height;
-    const w = Math.floor( Graphics.width * 0.66 );
-    const h = Graphics.height - y;
-    this._projectContainer = new ContainerField( new Rectangle( x, y, w, h ) );
-    this.addChild( this._projectContainer );
-    const list = new ProjectListField( w, 4, this._projects );
-
-    list.y += 1;
-
-    this._projectContainer.addElement( list );
-    this._projectContainer._listField = list;
-    list.setOkHandler( this.onListOk.bind( this ) )
-  }
-
-//=============================================================================
-  onListOk( index )
-  { // on selecting an item from the list.
-//=============================================================================
-
-    this._projectIndex = index;
-
-  }
-
-//=============================================================================
-  createOptionsList()
-  { // creat ea list for the options on what to do after selecting a project.
-//=============================================================================
-
-    const x = this._projectContainer.x + this._projectContainer.width;
-    const y = this._projectContainer.y;
-    const w = Graphics.width - x;
-    const h = Graphics.height - y;
-    const data = [
-      { name: 'Import MV' },
-      { name: 'Import MZ' },
-      { name: 'Edit Character Hitboxes' },
-      { name: 'Edit Projectile Patterns' },
-      { name: 'Edit Enemy AI' },
-      { name: 'Exit' },
-    ]
-    this._optionContainer = new ContainerField( new Rectangle( x, y, w, h ) );
-    this.addChild( this._optionContainer );
-
-    const list = new ButtonListField( w, 6, data );
-    this._optionContainer.addElement( list );
-    this._optionContainer._list = list;
-    // TODO: add resources list here again!
-    list.setOkHandler( this.onOptionOk.bind( this ) );
-  }
-
-//=============================================================================
-  onOptionOk( index )
-  { // when choosing an option.
-//=============================================================================
-
-    // if ( this._projectIndex >= 0 ) {
-      switch ( index ) {
-        case 0: // import MV
-          this.importProjectMV();
-          break;
-        case 1: // import MZ
-          this.importProjectMZ();
-          break;
-        case 2: // Edit Character Hitboxes
-
-          break;
-        case 3: // Projectile Editor
-
-          break;
-        case 4: // Enemy AI
-
-          break;
-        case 5: // Exit Tool
-
-          break;
-        default:
-
-      }
-    // }
-
-  }
-
-//=============================================================================
-  importProjectMV()
-  { // import an rpg maker MV project.
-//=============================================================================
-
-    const dir = Chaucer.uiTools.documentsDir();
-    const ext = '.rpgproject'
-    Chaucer.uiTools.fileDialog( this.onImport.bind( this ), dir, ext )
-    this._optionContainer._list.index = -1;
-
-  }
-
-//=============================================================================
-  importProjectMZ()
-  { // import an rpg maker MZ project.
-//=============================================================================
-
-    const dir = Chaucer.uiTools.documentsDir();
-    const ext = '.rmmzproject'
-    Chaucer.uiTools.fileDialog( this.onImport.bind( this ), dir, ext )
-    this._optionContainer._list.index = -1;
-
-  }
-
-//=============================================================================
-  getProjectName( directory )
-  { // get the name of the project at the current directory.
-//=============================================================================
-
-    const fs = require( 'fs' );
-    const path = require( 'path' );
-
-    const nextDir = path.join( directory, 'data', 'System.json' );
-
-    const system = JsonEx.parse( fs.readFileSync( nextDir, { encoding:'utf8', flag:'r' } ) );
-
-    return system.gameTitle;
-
-  }
-
-//=============================================================================
-  getProjectPluginInfo( directory )
-  { // return the plugin version for the project in the directory specified.
-//=============================================================================
-
-    const fs = require( 'fs' );
-    const path = require( 'path' );
-    const pluginName = 'Rosedale_ABS.js';
-
-    let nextDir = path.join( directory, 'js', 'plugins', pluginName );
-    let pluginInfo = { name: 'Rosedale ABS', version: 'Not Installed' };
-
-    if ( fs.existsSync( nextDir ) ) {
-
-      let identifier =  /(Rosedale ABS) : Version - (\d+\.\d+\.\d+)/;
-      let description = fs.readFileSync( nextDir, { encoding:'utf8', flag:'r' } ).split( '\n' )[6];
-
-      if ( description.match( identifier ) ) pluginInfo.version = RegExp.$2;
-
-    }
-
-    return pluginInfo;
-
-  }
-
-//=============================================================================
-  addProject( project )
-  { // add the project to the scene.
-//=============================================================================
-
-    this._projects.push( project );
-    console.log( this._projects );
-    // localStorage.absProjects = JsonEx.stringify( this._projects );
-
-    this._projectContainer._listField.data = this._projects;
-
-  }
-
-//=============================================================================
-  onImport( files )
-  { // Definition.
-//=============================================================================
-
-    const fs = require( 'fs' );
-    const path = require( 'path' );
-
-    if ( !files[0] ) return;
-
-    const file = files[0].path;
-    const directory = path.dirname( file );
-
-    const name = this.getProjectName( directory );
-    const pluginInfo = this.getProjectPluginInfo( directory );
-    const engineData = fs.readFileSync( file, { encoding:'utf8', flag:'r' } ).split( ' ' );
-    const engine = engineData[0] == 'RPGMZ' ? '\\I[3]\\I[4]' :
-    engnieInfo[0] == 'RPGMV' ? '\\I[1]\\I[2]' : 'Unknown';
-    const version = engineData[1];
-
-    const project = { engine, version, pluginInfo, name, directory };
-
-    this.addProject( project );
-
-  }
-
-}
-
-//=============================================================================
-window.Scene_ProjectSelect = Scene_ProjectSelect;
-//=============================================================================
-
-//=============================================================================
 // ContainerField :
 //=============================================================================
 
@@ -564,6 +315,7 @@ class LabelField extends Sprite
 //=============================================================================
 
     this._align = value;
+    this.anchor.x = ( ['left', 'center', 'right'].indexOf( this._align ) / 2 );
     this.refresh();
 
   }
@@ -787,7 +539,7 @@ class TextInputField extends Sprite
   { // set the size of the border radius in pixels.
 //=============================================================================
 
-    ths._borderRadius = pixels;
+    this._borderRadius = pixels;
 
   }
 
@@ -949,7 +701,7 @@ class TextInputField extends Sprite
       const parent = Chaucer.uiTools._activeInputField.parent;
       if ( parent.constructor.name == 'DropDownField' ) {
         if ( previous.visible && previous._active ) {
-          return !previous.mouseInBounds();
+          return !previous.mouseInBounds() && this.visible;
         }
       }
     }
@@ -2382,7 +2134,7 @@ class ButtonField extends Sprite
 //=============================================================================
 
     this._hoverColor = value;
-    ths.refresh();
+    this.refresh();
 
   }
 
@@ -2550,9 +2302,9 @@ class ButtonField extends Sprite
     if ( Chaucer.uiTools._activeInputField ) {
       const previous = Chaucer.uiTools._activeInputField;
       const parent = Chaucer.uiTools._activeInputField.parent;
-      if ( parent.constructor.name == 'DropDownField' ) {
+      if ( parent && parent.constructor.name == 'DropDownField' ) {
         if ( previous.visible && previous._active ) {
-          return !previous.mouseInBounds();
+          return !previous.mouseInBounds() && this.visible;
         }
       }
     }
@@ -2973,7 +2725,7 @@ class DropDownField extends ButtonField
   { // when the list index is selected.
 //=============================================================================
 
-    this.hoverIndex = index;
+    this.index = index;
     this._list.deactivate();
     this._list.visible = false;
 
@@ -3137,7 +2889,7 @@ class ListField extends Sprite
   { // set the outline color.
 //=============================================================================
 
-    ths._outlineColor = pixels;
+    this._outlineColor = pixels;
 
   }
 
@@ -3156,7 +2908,7 @@ class ListField extends Sprite
   { // set the backgroiund color.
 //=============================================================================
 
-    ths._backgroundColor = pixels;
+    this._backgroundColor = pixels;
 
   }
 
@@ -3175,7 +2927,7 @@ class ListField extends Sprite
   { // set hover color.
 //=============================================================================
 
-    ths._hoverColor = pixels;
+    this._hoverColor = pixels;
 
   }
 
@@ -3194,7 +2946,7 @@ class ListField extends Sprite
   { // set the click color.
 //=============================================================================
 
-    ths._clickColor = pixels;
+    this._clickColor = pixels;
 
   }
 
@@ -3213,7 +2965,7 @@ class ListField extends Sprite
   { // set the size of the outlineWidth in pixels.
 //=============================================================================
 
-    ths._outlineWidth = pixels;
+    this._outlineWidth = pixels;
 
   }
 
@@ -3232,7 +2984,7 @@ class ListField extends Sprite
   { // set the size of the border radius in pixels.
 //=============================================================================
 
-    ths._borderRadius = pixels;
+    this._borderRadius = pixels;
 
   }
 
@@ -3369,7 +3121,7 @@ class ListField extends Sprite
   { // get the hovered index.
 //=============================================================================
 
-    const min = 0;
+    const min = -1;
     const max = this.data.length - 1;
 
     this._hoverIndex = value.clamp( min, max );
@@ -3400,7 +3152,7 @@ class ListField extends Sprite
   { // set the current index.
 //=============================================================================
 
-    const min = 0;
+    const min = -1;
     const max = this.data.length - 1;
 
     this._index = value.clamp( min, max );
@@ -3672,6 +3424,15 @@ class ListField extends Sprite
   }
 
 //=============================================================================
+  item()
+  { // return the currently selected item.
+//=============================================================================
+
+    return this._data[this.index];
+
+  }
+
+//=============================================================================
   update()
   { // update the list.
 //=============================================================================
@@ -3703,6 +3464,8 @@ class ListField extends Sprite
       this.updateMouseWheel();
       this.updateMouseClick();
       this.updateMousePostion();
+    } else if ( !this.mouseInBounds() ) {
+      this.updateMouseHover();
     }
 
   }
@@ -3725,16 +3488,17 @@ class ListField extends Sprite
         if ( ty < oy + y || ty > oy + y + height ) continue;
 
         if ( this._hoverable || TouchInput.isTriggered() ) {
-          index = i;
+          if ( this.data[i] ) index = i;
         }
 
       };
 
-      if ( index >= 0 && index != this.hoverIndex ) this.hoverIndex = index;
+      if ( index >= -1 && index != this.hoverIndex ) this.hoverIndex = index;
 
     }
 
   }
+// TODO: click should trigger immedately!
 
 //=============================================================================
   updateMouseWheel()
@@ -4753,210 +4517,6 @@ window.TextInputField = TextInputField;
   Chaucer.uiTools = {};
 //=============================================================================
 
-//=============================================================================
-// DirectionContainer :
-//=============================================================================
-
-//=============================================================================
-class DirectionContainer extends ContainerField
-{ // DirectionContainer
-
-//=============================================================================
-  constructor( x, y )
-  { // Called on object creation.
-//=============================================================================
-
-    const width = Graphics.width / 4 + 1;
-    const height = width;
-    const rect = new Rectangle( x, y, width, height );
-
-    super( rect );
-    this._motionData = 1;
-    this._direction = 2;
-    // TODO: read motion data from external games!
-    // TODO: draw character motions.
-    // TODO: need another for projectiles.
-    // TODO: scene needs to read this directoin/motion data to allow editing.
-  }
-
-//=============================================================================
-  createElements()
-  { // create all element buttons.
-//=============================================================================
-
-    this.createUpLeftButton();
-    this.createUpButton();
-    this.createUpRightButton();
-
-    this.createLeftButton();
-    this.createMidButton();
-    this.createRightButton();
-
-    this.createDownLeftButton();
-    this.createDownButton();
-    this.createDownRightButton();
-
-  }
-
-//=============================================================================
-  createUpLeftButton()
-  { // create a button that displays up left arrow.
-//=============================================================================
-
-    const x = 2;
-    const y = 2;
-    const width = Math.floor( this.width / 3 - 2 );
-    const height = width;
-    const text = '⬉';
-    this._upLeftButton = new ButtonField( width, height, text );
-    this._upLeftButton.position.set( x, y );
-    this._upLeftButton.fontSize = 52;
-    this.addElement( this._upLeftButton );
-
-  }
-
-//=============================================================================
-  createUpButton()
-  { // create the up button.
-//=============================================================================
-
-    const x = Math.floor( 1 + this.width / 3 );
-    const y = 2;
-    const width = Math.floor( this.width / 3 - 2 );
-    const height = width;
-    const text = '⬆';
-    this._midButton = new ButtonField( width, height, text );
-    this._midButton.position.set( x, y );
-    this._midButton.fontSize = 52;
-    this.addElement( this._midButton );
-
-  }
-
-//=============================================================================
-  createUpRightButton()
-  { // create the up right button.
-//=============================================================================
-
-    const x = Math.floor( 0 + this.width / 3 * 2 );
-    const y = 2;
-    const width = Math.floor( this.width / 3 - 2 );
-    const height = width;
-    const text = '⬈';
-    this._rightButton = new ButtonField( width, height, text );
-    this._rightButton.position.set( x, y );
-    this._rightButton.fontSize = 52;
-    this.addElement( this._rightButton );
-
-  }
-
-//=============================================================================
-  createLeftButton()
-  { // create a button that displays left arrow.
-//=============================================================================
-
-    const x = 2;
-    const y = 1 + Math.floor( this.width / 3 );
-    const width = Math.floor( this.width / 3 - 2 );
-    const height = width;
-    const text = '⬅';
-    this._leftButton = new ButtonField( width, height, text );
-    this._leftButton.position.set( x, y );
-    this._leftButton.fontSize = 52;
-    this.addElement( this._leftButton );
-
-  }
-
-//=============================================================================
-  createMidButton()
-  { // create the center button.
-//=============================================================================
-
-    // const x = Math.floor( 1 + this.width / 3 );
-    // const y = 1 + Math.floor( this.width / 3 );
-    // const width = Math.floor( this.width / 3 - 2 );
-    // const height = width;
-    // const text = 'O';
-    // this._upButton = new ButtonField( width, height, text );
-    // this._upButton.position.set( x, y );
-    // this._upButton.fontSize = 52;
-    // this.addElement( this._upButton );
-
-  }
-
-//=============================================================================
-  createRightButton()
-  { // create the right button.
-//=============================================================================
-
-    const x = Math.floor( 0 + this.width / 3 * 2 );
-    const y = 1 + Math.floor( this.width / 3 );
-    const width = Math.floor( this.width / 3 - 2 );
-    const height = width;
-    const text = '➡';
-    this._upRightButton = new ButtonField( width, height, text );
-    this._upRightButton.position.set( x, y );
-    this._upRightButton.fontSize = 52;
-    this.addElement( this._upRightButton );
-
-  }
-
-//=============================================================================
-  createDownLeftButton()
-  { // create a button that displays down left arrow.
-//=============================================================================
-
-    const x = 2;
-    const y = 0 + Math.floor( this.width / 3 ) * 2;
-    const width = Math.floor( this.width / 3 - 2 );
-    const height = width;
-    const text = '⬋';
-    this._downLeftButton = new ButtonField( width, height, text );
-    this._downLeftButton.position.set( x, y );
-    this._downLeftButton.fontSize = 52;
-    this.addElement( this._downLeftButton );
-
-  }
-
-//=============================================================================
-  createDownButton()
-  { // create the up button.
-//=============================================================================
-
-    const x = Math.floor( 1 + this.width / 3 );
-    const y = 0 + Math.floor( this.width / 3 ) * 2;
-    const width = Math.floor( this.width / 3 - 2 );
-    const height = width;
-    const text = '⬇';
-    this._downButton = new ButtonField( width, height, text );
-    this._downButton.position.set( x, y );
-    this._downButton.fontSize = 52;
-    this.addElement( this._downButton );
-
-  }
-
-//=============================================================================
-  createDownRightButton()
-  { // create the up right button.
-//=============================================================================
-
-    const x = Math.floor( 0 + this.width / 3 * 2 );
-    const y = 0 + Math.floor( this.width / 3 ) * 2;
-    const width = Math.floor( this.width / 3 - 2 );
-    const height = width;
-    const text = '⬊';
-    this._downRightButton = new ButtonField( width, height, text );
-    this._downRightButton.position.set( x, y );
-    this._downRightButton.fontSize = 52;
-    this.addElement( this._downRightButton );
-
-  }
-
-}
-
-//=============================================================================
-window.DirectionContainer = DirectionContainer;
-//=============================================================================
-
 ( function ( $ ) { // CONFIG:
 
 
@@ -5188,6 +4748,16 @@ window.DirectionContainer = DirectionContainer;
 //=============================================================================
 
 //-----------------------------------------------------------------------------
+  $.expand( Bitmap, 'loadBase64', function( string )
+  { // Definition.
+//-----------------------------------------------------------------------------
+
+    return Bitmap.load( string );
+
+
+  }, true );
+
+//-----------------------------------------------------------------------------
   $.expand( Bitmap, 'drawRoundedRect', function( x, y, width, height, radius, color )
   { // Aliased drawRoundedRect of class Bitmap.
 //-----------------------------------------------------------------------------
@@ -5213,29 +4783,12 @@ window.DirectionContainer = DirectionContainer;
   window.addEventListener('keydown', $.processKeyInput.bind( $ ) );
 
 //=============================================================================
-// Scene_Boot :
-//=============================================================================
-
-//-----------------------------------------------------------------------------
-  $.alias( Scene_Boot, 'startNormalGame', function()
-  { // Aliased startNormalGame of class Scene_Boot.
-//-----------------------------------------------------------------------------
-
-    this.checkPlayerLocation();
-    DataManager.setupNewGame();
-    SceneManager.goto( Scene_ProjectSelect );
-    Window_TitleCommand.initCommandPosition();
-
-
-  }, false );
-
-//=============================================================================
-// ProjectListField :
+// ButtonListField :
 //=============================================================================
 
 //=============================================================================
 class ButtonListField extends ListField
-{ // ProjectListField
+{ // ButtonListField
 
 //=============================================================================
   constructor( width, maxRows, data )
@@ -5344,77 +4897,6 @@ class ButtonListField extends ListField
 
 //=============================================================================
 window.ButtonListField = ButtonListField;
-//=============================================================================
-
-//=============================================================================
-// ProjectListField :
-//=============================================================================
-
-//=============================================================================
-class ProjectListField extends ButtonListField
-{ // ProjectListField
-
-//=============================================================================
-  constructor( width, maxRows, data )
-  { // Called on object creation.
-//=============================================================================
-
-    super( width, maxRows, data );
-
-  }
-
-//=============================================================================
-  itemHeight()
-  { // return the height of each item in the list.
-//=============================================================================
-
-    return 171;
-
-  }
-
-//=============================================================================
-  drawItem( index )
-  { // Definition.
-//=============================================================================
-
-    const item = this.itemAt( index );
-    const rect = this.itemRect( index );
-
-    this.drawItemBackground( rect );
-
-    if ( item ) {
-      const height = this.bitmap.fontSize + 8;
-      const x = 10 + rect.x;
-      const y = 8 + rect.y;
-      const width = rect.width - 20;
-
-      const pluginName = item.pluginInfo.name + ': ' + item.pluginInfo.version;
-      const engineName = `\\FS[${this.bitmap.fontSize + 4}]` + `\\PY[${y + 2}]|\\PY[${y + 3}]` + item.engine + `\\PY[${y + 2}]| \\PY[${y}]`;
-      const engineVersion = `\\PY[${y + 2}]\\FS[${this.bitmap.fontSize + 8}]` + item.version;
-      const engineSize = this.textSizeEx( engineName );
-      const projectName = `\\FS[${this.bitmap.fontSize + 8}]` + item.name;
-      const pathName = 'Location: ' + item.directory;
-
-      this.drawTextEx( engineName, x, y, width, height );
-      this.drawTextEx( engineVersion, x + engineSize.width, y, width, height );
-      this.drawTextEx( projectName, x, y + 40, width, height );
-      this.resetFontSettings();
-      this.bitmap.fontSize += 4;
-      // TODO: colorize this based on plugin version
-      this.bitmap.drawText( pluginName, x, y + 90, width, height );
-      this.resetFontSettings();
-      this.bitmap.fontSize -= 2;
-      this.bitmap.drawText( pathName, x, y + rect.height - this.lineHeight() - 16, width, height );
-      this.resetFontSettings();
-
-    }
-
-  }
-
-}
-
-//=============================================================================
-window.ProjectListField = ProjectListField;
 //=============================================================================
 
 //=============================================================================

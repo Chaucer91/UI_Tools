@@ -2027,7 +2027,7 @@ SceneManager.catchException = function(e) {
 };
 
 SceneManager.catchNormalError = function(e) {
-    Graphics.printError(e.name, e.message, e);
+    Graphics.printError(e.name, e.stack, e);
     AudioManager.stopAll();
     console.error(e.stack);
 };
