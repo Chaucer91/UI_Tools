@@ -86,6 +86,7 @@ class ContainerField extends Sprite
 //=============================================================================
 
     super( new Bitmap() );
+    this._isContainer = true;
     this.createBackgrounds();
     this.rect = rect;
     this.create();
@@ -138,6 +139,7 @@ class ContainerField extends Sprite
     this._elementsMask = new Sprite( new Bitmap( 100, 100 ) );
     this.addChild( this._elementsMask );
     this._elementContainer.mask = this._elementsMask;
+
   }
 
 //=============================================================================
@@ -262,6 +264,7 @@ class LabelField extends Sprite
     this.fontSize = LabelField.defaults.fontSize;
     this.fontFace = LabelField.defaults.fontFace;
     this.align = LabelField.defaults.align;
+    this._isLabel = true;
     this.text = text;
 
   }
@@ -315,7 +318,11 @@ class LabelField extends Sprite
 //=============================================================================
 
     this._align = value;
-    this.anchor.x = ( ['left', 'center', 'right'].indexOf( this._align ) / 2 );
+    const width = this.width;
+    const align = ( ['left', 'center', 'right'].indexOf( this._align ) / 2 );
+
+    this.anchor.x = Math.round( width * align ) / width
+
     this.refresh();
 
   }
@@ -416,6 +423,7 @@ class TextInputField extends Sprite
     settings = Object.assign( defaults, settings );
 
     super( new Bitmap( width, settings.fontSize + padding ) );
+    this._disabled = false;
     this._previousField = null;
     this._nextField = null;
     this._highlighted = [-1, -1];
@@ -426,6 +434,27 @@ class TextInputField extends Sprite
     this.createCaret();
     this.createTextSrc();
     this.applySettings( settings );
+
+    Chaucer.uiTools._elementsList.push( this );
+
+  }
+
+//=============================================================================
+  get disabled()
+  { // return if disabled.
+//=============================================================================
+
+    return this._disabled;
+
+  }
+
+//=============================================================================
+  set disabled( value )
+  { // set the disabled value.
+//=============================================================================
+
+    this._disabled = value;
+    this.refresh();
 
   }
 
@@ -699,13 +728,13 @@ class TextInputField extends Sprite
     if ( Chaucer.uiTools._activeInputField ) {
       const previous = Chaucer.uiTools._activeInputField;
       const parent = Chaucer.uiTools._activeInputField.parent;
-      if ( parent.constructor.name == 'DropDownField' ) {
+      if ( parent && parent.constructor.name == 'DropDownField' ) {
         if ( previous.visible && previous._active ) {
           return !previous.mouseInBounds() && this.visible;
         }
       }
     }
-    return true;
+    return !this._disabled;
 
   }
 
@@ -891,7 +920,9 @@ class TextInputField extends Sprite
       this._textSrc.fontFace = 'sans-serif';
       this._textSrc.drawText( this.text, 0, 0, width, height );
 
+      this.bitmap.paintOpacity = this._disabled ? 150 : 255;
       this.bitmap.blt( this._textSrc, ox, 0, dw, height, dx, dy, dw, dh );
+      this.bitmap.paintOpacity = 255;
 
     }
 
@@ -1276,6 +1307,8 @@ class TextInputField extends Sprite
       this.text = text.slice( 0, min ) + text.slice( max, len );
       this._highlighted = [-1, -1];
       this._caretIndex -= max - min;
+      this._caretIndex.clamp( 0, text.length )
+
       if ( this._okHandler ) this._okHandler( this.text );
 
     }
@@ -1297,13 +1330,25 @@ class TextInputField extends Sprite
   { // add character to text.
 //=============================================================================
 
-    this.deleteHighlighted();
-
     const a = this.text.slice( 0, this._caretIndex );
     const b = this.text.slice( this._caretIndex );
 
     this.text = a + char + b;
-    this.caretIndex += char.length;
+    this.caretIndex += String( char ).length;
+
+    if ( this._highlighted[0] >= 0 && this._highlighted[1] >= 0 ) {
+      let lastIndex = this.caretIndex;
+      if ( this._highlighted[1] < this._highlighted[0] ) {
+        this._highlighted[1] += char.length;
+        this._highlighted[0] += char.length;
+        this.deleteHighlighted();
+        this.caretIndex = lastIndex;
+      } else {
+        this.deleteHighlighted();
+      }
+
+    }
+
     if ( this._okHandler ) this._okHandler( this.text );
 
   }
@@ -1356,13 +1401,14 @@ class TextInputField extends Sprite
 
     if ( !this.canActivate() ) return false;
 
+    const $ = Chaucer.uiTools;
     const { x, y } = this.getGlobalPosition( new Point(), true )
     const { x:tx, y:ty } = TouchInput;
     const { width, height } = this;
 
     const cx = tx > x && tx < x + width;
     const cy = ty > y && ty < y + height;
-    return cx && cy;
+    return cx && cy && !this._disabled && $.isTopElement( this );
 
   }
 
@@ -1434,7 +1480,7 @@ class NumberInputField extends TextInputField
   }
 
 //=============================================================================
-  constructor( width, settings = {} )
+  constructor( width, decimals, settings = {} )
   { // Called on object creation.
 //=============================================================================
 
@@ -1443,8 +1489,10 @@ class NumberInputField extends TextInputField
     settings = Object.assign( defaults, settings );
 
     super( width, settings );
+    this._decimals = decimals;
     this.value = this.minValue;
     this.caretIndex = this.text.length;
+
   }
 
 //=============================================================================
@@ -1452,7 +1500,7 @@ class NumberInputField extends TextInputField
   { // return the value of the input field.
 //=============================================================================
 
-    return this._value || 0;
+    return Number( this._text ) || 0;
 
   }
 
@@ -1462,8 +1510,7 @@ class NumberInputField extends TextInputField
 //=============================================================================
 
     if ( !isNaN( value ) ) {
-      this._value = value.clamp( this.minValue, this.maxValue );
-      this.refresh();
+      this.text = Number( value ).clamp( this.minValue, this.maxValue );
     }
 
   }
@@ -1473,7 +1520,7 @@ class NumberInputField extends TextInputField
   { // return the text.
 //=============================================================================
 
-    return String( this.value ) || '0';
+    return this._text || '';
 
   }
 
@@ -1482,7 +1529,9 @@ class NumberInputField extends TextInputField
   { // set the text to the value specified.
 //=============================================================================
 
-    this.value = Number( value );
+    if ( typeof value == 'number' ) value = value.toString();
+    this._text = value;
+    this.refresh();
 
   }
 
@@ -1569,11 +1618,14 @@ class NumberInputField extends TextInputField
   { // increase the current value.
 //=============================================================================
 
+    const d = this._decimals;
     const len = this.text.length;
     const atEnd = this.caretIndex === len;
-
-    this.value += shift ? 10 : 1;
-    if ( this._okHandler ) this._okHandler( this._value );
+    const n = Number( '1'.padEnd( this._decimals + 1, '0' ) );
+    let value = this.value + Number( ( shift ? 10 : 1 ) / n );
+    value = Number( value.toFixed( this._decimals ) );
+    this.text = String( value.clamp( this.minValue, this.maxValue ) );
+    if ( this._okHandler ) this._okHandler( this.value );
 
     if ( atEnd && len < this.text.length ) this.caretIndex++;
 
@@ -1584,19 +1636,23 @@ class NumberInputField extends TextInputField
   { // decrease the value.
 //=============================================================================
 
-    this.value -= shift ? 10 : 1;
-    if ( this._okHandler ) this._okHandler( this._value );
+    // this.value -= shift ? 10 : 1;
+    const d = this._decimals;
+    const n = '1'.padEnd( d + 1, '0' );
+    let value = this.value - Number( ( shift ? 10 : 1 ) / n );
+    value = Number( value.toFixed( this._decimals ) );
+    this.text = String( value.clamp( this.minValue, this.maxValue ) );
+    if ( this._okHandler ) this._okHandler( this.value );
 
   }
 
 //=============================================================================
   addCharacter( character )
-  { // add a character, but only accept numbers.
+  { // add the character.
 //=============================================================================
 
-    if ( character.match( /[0-9]/ ) ) {
-      super.addCharacter( character );
-    }
+    const regxp = this._decimals == 0 ? /[-\0-9]/ : /^[-\0-9.]$/
+    if ( character.match( regxp ) ) super.addCharacter( character );
 
   }
 
@@ -1605,11 +1661,11 @@ class NumberInputField extends TextInputField
   { // remove character.
 //=============================================================================
 
-    const isZero = this.value == 0;
     const lastIndex = this.caretIndex;
 
     super.removeCharacter();
 
+    const isZero = this.value == this.minValue;
     if ( isZero ) this.caretIndex = lastIndex;
 
   }
@@ -1634,6 +1690,32 @@ class NumberInputField extends TextInputField
       if ( TouchInput.wheelY < 0 ) this.increaseValue();
       if ( TouchInput.wheelY > 0 ) this.decreaseValue();
 
+    }
+
+  }
+
+//=============================================================================
+  deactivate()
+  { // when deactivating hte field.
+//=============================================================================
+
+    if ( this._active ) {
+      super.deactivate();
+      this.clampValue();
+    }
+
+  }
+
+//=============================================================================
+  clampValue()
+  { // clamp the value to min and max.
+//=============================================================================
+
+    let text = this.text.replace(/\.{2,}/g, '.');
+    let value = Number( Number( text ).toFixed( this._decimals ) );
+    this.text = String( value.clamp( this.minValue, this.maxValue ) );
+    if ( this._okHandler ) {
+      this._okHandler( Number( this.text ) );
     }
 
   }
@@ -2057,8 +2139,29 @@ class ButtonField extends Sprite
     this._nextField = null;
     this._active = false;
     this._clicked = false;
-
+    this._disabled = false;
     this.applySettings( settings );
+
+    Chaucer.uiTools._elementsList.push( this );
+
+  }
+
+//=============================================================================
+  get disabled()
+  { // return if disabled.
+//=============================================================================
+
+    return this._disabled;
+
+  }
+
+//=============================================================================
+  set disabled( value )
+  { // set disabled.
+//=============================================================================
+
+    this._disabled = value;
+    this.refresh();
 
   }
 
@@ -2308,7 +2411,7 @@ class ButtonField extends Sprite
         }
       }
     }
-    return true;
+    return !this._disabled;
 
   }
 
@@ -2316,7 +2419,9 @@ class ButtonField extends Sprite
   setClickHandler( fn )
   { // set what happens when the button is clicked.
 //=============================================================================
+
     this._clickHandler = fn;
+
   }
 
 //=============================================================================
@@ -2374,6 +2479,7 @@ class ButtonField extends Sprite
   { // return if the input field is clicked.
 //=============================================================================
 
+    const $ = Chaucer.uiTools;
     const { x, y } = this.getGlobalPosition( new Point(), true )
     const { x:tx, y:ty } = TouchInput;
     const { width, height } = this;
@@ -2381,7 +2487,7 @@ class ButtonField extends Sprite
     const cx = tx > x && tx < x + width;
     const cy = ty > y && ty < y + height;
 
-    return cx && cy;
+    return cx && cy && !this._disabled && $.isTopElement( this );
 
   }
 
@@ -2438,8 +2544,23 @@ class ButtonField extends Sprite
 
     const x = 0;
     const y = this._outlineWidth;
+    // TODO: drawTextEx for bitmap with alignement!!
+    this.bitmap.paintOpacity = this._disabled ? 150 : 255;
+    if ( this.text.match( /\\I\[(\d+)\]/ ) ) {
+      const iconIndex = RegExp.$1;
+      const src = ImageManager.loadSystem( 'IconSet' );
+      const sw = ImageManager.iconWidth;
+      const sh = ImageManager.iconHeight;
+      const sx = (iconIndex % 16) * sw;
+      const sy = Math.floor(iconIndex / 16) * sh;
+      const p = 4;
+      this.bitmap.blt( src, sx, sy, sw, sh, x + p, y + p, width - p * 2, height - p * 2 );
 
-    this.bitmap.drawText( this.text, x, y, width, height, 'center' );
+    } else {
+      this.bitmap.drawText( this.text, x, y, width, height, 'center' );
+
+    }
+    this.bitmap.paintOpacity = 255;
 
   }
 
@@ -2694,6 +2815,15 @@ class DropDownField extends ButtonField
   }
 
 //=============================================================================
+  item()
+  { // return the currently selected item.
+//=============================================================================
+
+    return this.data[this.index];
+
+  }
+
+//=============================================================================
   setOkHandler( fn )
   { // set the ok handler.
 //=============================================================================
@@ -2729,7 +2859,10 @@ class DropDownField extends ButtonField
     this._list.deactivate();
     this._list.visible = false;
 
-    if ( this._okHandler ) this._okHandler( index );
+    if ( this._okHandler ) this._okHandler( this.item() );
+
+    this.clicked = false;
+    this.deactivate();
 
   }
 
@@ -2789,16 +2922,18 @@ class DropDownField extends ButtonField
 
     const width = this.width - this._padding * 2;
     const height = this.height;
-    const ow = Math.ceil( this.bitmap.measureTextWidth( '\u2304' ) );
+    const ow = Math.ceil( this.bitmap.measureTextWidth( '\u2B0E' ) );
 
     const x = this._padding;
     const y1 = this._outlineWidth;
-    const y2 = y1 - ( this.fontSize ) / 2
+    const y2 = y1 //+ ( this.fontSize ) / 2
     const width1 = width - ow;
     const width2 = width;
 
+    this.bitmap.paintOpacity = this._disabled ? 150 : 255;
     this.bitmap.drawText( this.text, x, y1, width1, height, 'left' );
-    this.bitmap.drawText( '\u2304', x, y2, width2, height, 'right' );
+    this.bitmap.drawText( '\u2B0E', x, y2, width2, height, 'right' );
+    this.bitmap.paintOpacity = 255;
 
   }
 
@@ -2809,13 +2944,23 @@ class DropDownField extends ButtonField
 
     if ( TouchInput.isTriggered() ) {
       this.clicked = this.mouseInBounds();
-      if ( !this.clicked ) this.deactivate();
+
+      if ( this._list.visible && !this._list.mouseInBounds() ) {
+        this._clicked = false;
+        return this.deactivate();
+      }
+
+      if ( !this.clicked && !this._list.mouseInBounds() ) {
+        this._clicked = false;
+        return this.deactivate();
+      }
+
     }
 
     if ( this.clicked && !TouchInput.isPressed() ) {
       this.clicked = false;
       this.activate();
-      if ( this._clickHandler ) this._clickHandler();
+      if ( this._clickHandler ) this._clickHandler( this.item() );
     }
   }
 
@@ -2844,6 +2989,8 @@ class ListField extends Sprite
 
     }
 
+    Chaucer.uiTools._elementsList.push( this );
+
   }
 
 //=============================================================================
@@ -2857,9 +3004,10 @@ class ListField extends Sprite
 
     super( new Bitmap( width, height ) );
 
-    this._index = -1
+    this._index = -1;
     this._hoverIndex = -1;
     this._okHandler = null;
+    this._persistent = false;
     this._mouse = { x: -1, y: -1 };
     this._maxRows = maxRows;
     this._previousField = null;
@@ -2871,6 +3019,24 @@ class ListField extends Sprite
 
     this.createScrollbar();
     this.applySettings( settings );
+
+  }
+
+//=============================================================================
+  get persistent()
+  { // return if the cursor will remain on last selected item.
+//=============================================================================
+
+    return this._persistent;
+
+  }
+
+//=============================================================================
+  set persistent( value )
+  { // set if the cursor will remain persistent.
+//=============================================================================
+
+    this._persistent = value;
 
   }
 
@@ -3166,7 +3332,7 @@ class ListField extends Sprite
   { // return the maximum height of the window scroll.
 //=============================================================================
 
-    return this.data.length * this.fontSize;
+    return this.data.length * this.itemRect().height;
 
   }
 
@@ -3212,13 +3378,14 @@ class ListField extends Sprite
   { // return if the input field is clicked.
 //=============================================================================
 
+    const $ = Chaucer.uiTools;
     const { x, y } = this.getGlobalPosition( new Point(), true )
     const { x:tx, y:ty } = TouchInput;
     const { width, height } = this;
 
     const cx = tx > x && tx < x + width;
     const cy = ty > y && ty < y + height;
-    return cx && cy;
+    return cx && cy && $.isTopElement( this );
 
   }
 
@@ -3374,8 +3541,9 @@ class ListField extends Sprite
 //=============================================================================
 
     const top = this.topIndex;
+    const sb = this._scrollbar;
     const ow = this.outlineWidth;
-    const width = this.width - this._scrollbar.width - ow * 2;
+    const width = this.width - ( sb ? sb.width - ow * 2 : 0 );
     const height = this.fontSize + this._padding;
     const x = ow;
     const y = height * ( i - top );
@@ -3449,6 +3617,7 @@ class ListField extends Sprite
   { // return if the scrolbar is being dragged or repeat scrolled.
 //=============================================================================
 
+    if ( this._scrollbar.mouseInBounds() ) return true;
     return this._scrollbar._dragging || this._scrollbar._repeatScroll;
 
   }
@@ -3464,8 +3633,7 @@ class ListField extends Sprite
       this.updateMouseWheel();
       this.updateMouseClick();
       this.updateMousePostion();
-    } else if ( !this.mouseInBounds() ) {
-      this.updateMouseHover();
+
     }
 
   }
@@ -3478,6 +3646,8 @@ class ListField extends Sprite
     const { x:ox, y:oy } = this.getGlobalPosition( new Point(), true );
     const { x:tx, y:ty } = TouchInput;
 
+    if ( !this.mouseInBounds() ) return;
+
     if ( !this._hoverable || ( this._mouse.x != tx || this._mouse.y != ty ) ) {
 
       let index = -1;
@@ -3488,7 +3658,7 @@ class ListField extends Sprite
         if ( ty < oy + y || ty > oy + y + height ) continue;
 
         if ( this._hoverable || TouchInput.isTriggered() ) {
-          if ( this.data[i] ) index = i;
+          index = i;
         }
 
       };
@@ -3498,7 +3668,6 @@ class ListField extends Sprite
     }
 
   }
-// TODO: click should trigger immedately!
 
 //=============================================================================
   updateMouseWheel()
@@ -3529,14 +3698,25 @@ class ListField extends Sprite
       const { x:ox, y:oy } = this.getGlobalPosition( new Point(), true );
       const { x:tx, y:ty } = TouchInput;
 
-      const { x, y, width, height } = this.itemRect( this.index - this.topIndex );
+      const { x, y, width, height } = this.itemRect( this._hoverIndex );
 
       const cx = ( tx > ox + x && tx < ox + x + width );
       const cy = ( ty > oy + y && ty < oy + y + height );
 
-      this.index = this.hoverIndex;
+      if ( !this._persistent ) {
 
-      if ( this._okHandler && cx && cy ) this.processOk();
+        this.index = this.hoverIndex;
+
+        if ( this._okHandler && cx && cy ) this.processOk();
+
+      } else if ( this._persistent && this.hoverIndex >= 0 ) {
+
+        this.index = this.hoverIndex;
+
+        if ( this._okHandler && cx && cy ) this.processOk();
+
+      }
+
 
     }
 
@@ -4004,25 +4184,48 @@ class ExpandingListField extends ListField
 
     super( width, maxRows, data, settings );
 
+  }
+
+//=============================================================================
+  drawItem( index )
+  { // draw the item at the index provided.
+//=============================================================================
+
+    let { x, y, width, height } = this.itemRect( index );
+    let p = this._padding;
+
+    const item = this.itemAt( index );
+    const text = item ? item.name : item === null ? '+' : '';
+
+    this.bitmap.drawText( text, x + p, y, width - p * 2, height, 'center' );
 
   }
 
 //=============================================================================
-  refreshText()
-  { // refresh the text that is displayed.
+  updateMouseHover()
+  { // Definition.
 //=============================================================================
 
-    const top = this.topIndex;
-    let p = this._padding;
+    const { x:ox, y:oy } = this.getGlobalPosition( new Point(), true );
+    const { x:tx, y:ty } = TouchInput;
 
-    for ( let i = 0, l = this.maxRows; i <= l; i++ ) {
+    if ( !this._hoverable || ( this._mouse.x != tx || this._mouse.y != ty ) ) {
 
-      let { x, y, width, height } = this.itemRect( i );
-      const object = this.data[top + i];
-      const text = object ? object.name : object === null ? 'Add New' : '';
+      let index = -1;
 
-      this.bitmap.drawText( text, x + p, y, width - p * 2, height, 'left' );
-    };
+      for ( let i = this.topIndex, l = this.topIndex + this.maxRows; i < l; i++ ) {
+        const { x, y, width, height } = this.itemRect( i );
+        if ( tx < ox + x || tx > ox + x + width ) continue;
+        if ( ty < oy + y || ty > oy + y + height ) continue;
+
+        if ( this._hoverable || TouchInput.isTriggered() ) {
+          if ( this.data[i] !== undefined ) index = i;
+        }
+
+      };
+      if ( index >= -1 && index != this.hoverIndex ) this.hoverIndex = index;
+
+    }
 
   }
 
@@ -4183,8 +4386,8 @@ class ScrollBarVert extends Sprite
     const w2 = this.width - 2;
     const h2 = this.height - 2;
 
-    const radius1 = w1 / 2;
-    const radius2 = w2 / 2;
+    const radius1 = Math.abs( w1 / 2 );
+    const radius2 = Math.abs( w2 / 2 );
 
     const color0 = this.outlineColor;
     const color1 = this.backgroundColor;
@@ -4228,7 +4431,7 @@ class ScrollBarVert extends Sprite
 
     let { x, y, width, height } = this.buttonRect();
 
-    const radius = width / 2;
+    const radius = Math.abs( width / 2 );
     const color = this.buttonColor;
 
     if ( height < radius * 2 ) {
@@ -4269,6 +4472,7 @@ class ScrollBarVert extends Sprite
   { // return if the input field is clicked.
 //=============================================================================
 
+    const $ = Chaucer.uiTools;
     const { x, y } = this.getGlobalPosition( new Point(), true )
     const { x:tx, y:ty } = TouchInput;
     const { width, height } = this;
@@ -4276,7 +4480,7 @@ class ScrollBarVert extends Sprite
     const cx = tx > x && tx < x + width;
     const cy = ty > y && ty < y + height;
 
-    return cx && cy;
+    return cx && cy && $.isTopElement( this );
 
   }
 
@@ -4407,6 +4611,26 @@ class CheckboxField extends TextInputField
   }
 
 //=============================================================================
+  get value()
+  { // return the value.
+//=============================================================================
+
+    return this._value || false;
+
+  }
+
+//=============================================================================
+  set value( value )
+  { // set the value of the checkbox.
+//=============================================================================
+
+    this._value = value;
+    this.text = this._value ? ' ✓' : ' ';
+    this.refresh();
+
+  }
+
+//=============================================================================
   refreshSize()
   { // refresh the size of the text input field based on font size.
 //=============================================================================
@@ -4427,7 +4651,6 @@ class CheckboxField extends TextInputField
 //=============================================================================
 
     this.value = !this.value;
-    this.text = this.value ? ' ✓' : ' ';
     if ( this._okHandler ) this._okHandler( this.value );
 
     if ( !this._active && this.canActivate() ) {
@@ -4469,7 +4692,6 @@ class CheckboxField extends TextInputField
 
     if ( key == ' ' ) {
       this.value = !this.value;
-      this.text = this.value ? ' ✓' : ' ';
       if ( this._okHandler ) this._okHandler( this.value );
 
     }
@@ -4596,6 +4818,7 @@ window.TextInputField = TextInputField;
         $.params = Chaucer.parse( $plugins[i].parameters );
         $.commands = {};
         $.alias = {};
+        $._elementsList = [];
         $._activeInputField = null;
         $.input = document.createElement('input');
         $.input.type = 'file';
@@ -4617,6 +4840,95 @@ window.TextInputField = TextInputField;
     if ( !$.name ) throw new Error( $._nameError );
 
 //=============================================================================
+
+//-----------------------------------------------------------------------------
+  $.getElementHeiarchy = function ( element )
+  { // return the heiarchy of the element.
+//-----------------------------------------------------------------------------
+
+    let heiarchy = [element];
+    let parent = element;
+
+    while( parent ) {
+      parent = parent.parent;
+      if ( parent ) heiarchy.unshift( parent );
+    }
+
+    return heiarchy;
+
+  };
+
+//-----------------------------------------------------------------------------
+  $.getHighestRelativeIndex = function ( list0, list1 )
+  { // return the heiarchy of the element.
+//-----------------------------------------------------------------------------
+
+
+    len = Math.max( list0.length, list1.length )
+    for ( let i = 0, l = len; i < l; i++ ) {
+      if ( list0[i] != list1[i] ) return i - 1;
+    };
+
+    return len - 1;
+
+  };
+
+//-----------------------------------------------------------------------------
+  $.isTopElement = function ( element )
+  { // return any elements that are overlapping this element.
+//-----------------------------------------------------------------------------
+
+    const elements = $.otherClickedElements( element );
+    if ( elements.length == 0 ) return true;
+    let h0 = $.getElementHeiarchy( element );
+    let result = true;
+
+    for ( let i = 0, l = elements.length; i < l; i++ ) {
+      let h1 = $.getElementHeiarchy( elements[i] );
+      let index = this.getHighestRelativeIndex( h0, h1 );
+      const parent = h0[index];
+
+      const i0 = parent.children.indexOf( h0[index + 1] );
+      const i1 = parent.children.indexOf( h1[index + 1] );
+
+      if ( i0 < i1 ) result = false;
+
+    };
+
+    return result;
+
+  };
+
+//-----------------------------------------------------------------------------
+  $.otherClickedElements = function ( element )
+  { // return any elements that are overlapping this element.
+//-----------------------------------------------------------------------------
+
+    const elements = $.validElements();
+    const { x:tx, y:ty } = TouchInput;
+
+    return elements.filter( e => {
+      if ( e === element ) return false
+
+      const { x, y } = e.getGlobalPosition( new Point(), true )
+      const { width, height } = e;
+
+      const cx = tx > x && tx < x + width;
+      const cy = ty > y && ty < y + height;
+      return cx && cy;
+
+    } );
+
+  };
+
+//-----------------------------------------------------------------------------
+  $.validElements = function ()
+  { // compare the current version with the target version.
+//-----------------------------------------------------------------------------
+
+    return $._elementsList.filter( n => n.parent && !n.disabled && n.visible );
+
+  };
 
 //-----------------------------------------------------------------------------
   $.processKeyInput = function ( event )
@@ -4710,6 +5022,31 @@ window.TextInputField = TextInputField;
   }
 
 //-----------------------------------------------------------------------------
+  $.readDirRecursive = function( dir, exts = null )
+  { // return the documents directory for the os
+//-----------------------------------------------------------------------------
+
+    const fs = require('fs');
+    const path = require( 'path' );
+
+    let base = dir;
+    let results = [];
+    let data = fs.readdirSync( dir );
+
+    for ( let i = 0, l = data.length; i < l; i++ ) {
+      let fileDir = path.join( base, data[i] );
+      if ( fs.lstatSync( fileDir ).isDirectory() ) {
+        let data2 = $.readDirRecursive( fileDir, exts );
+        results = results.concat( data2 );
+      } else if ( !exts || exts.some( ext => fileDir.endsWith( ext ) ) ) {
+        results.push( fileDir );
+      }
+    };
+
+    return results;
+  }
+
+//-----------------------------------------------------------------------------
   $.fileDialog = function ( fn, directory = "", ext = "" )
   { // open a file dialog to choose a project.
 //-----------------------------------------------------------------------------
@@ -4717,8 +5054,8 @@ window.TextInputField = TextInputField;
     $.input.nwworkingdir = directory;
     $.input.accept = ext;
     $.input.onchange = function() {
-      fn( $.input.files );
-    };
+      if ( fn ) fn( $.input.files );
+    }.bind( this );
     $.input.click();
 
   }
@@ -4747,6 +5084,87 @@ window.TextInputField = TextInputField;
 // ALIASED CODE BELOW THIS LINE!
 //=============================================================================
 
+//=============================================================================
+// Number :
+//=============================================================================
+
+  String.prototype.replaceAt = function(index, replacement) {
+    return this.slice( 0, index ) + replacement + this.slice( index + 1 );
+  }
+
+//=============================================================================
+// TouchInput :
+//=============================================================================
+
+TouchInput._createNewState = function() {
+    return {
+        middleTriggered: false,
+        triggered: false,
+        cancelled: false,
+        moved: false,
+        hovered: false,
+        released: false,
+        wheelX: 0,
+        wheelY: 0
+    };
+};
+
+TouchInput._onMiddleButtonDown = function( event ) {
+    const x = Graphics.pageToCanvasX(event.pageX);
+    const y = Graphics.pageToCanvasY(event.pageY);
+    if (Graphics.isInsideCanvas(x, y)) {
+        this._middlePressed = true;
+        this._middleTime = 0;
+        this._onMiddleTrigger(x, y);
+    }
+
+};
+
+TouchInput._onMiddleTrigger = function(x, y) {
+    this._newState.middleTriggered = true;
+    this._x = x;
+    this._y = y;
+    this._middleX = x;
+    this._middleY = y;
+    this._moved = false;
+    this._date = Date.now();
+};
+
+//-----------------------------------------------------------------------------
+  $.expand( TouchInput, 'isMiddlePressed', function()
+  { // Definition.
+//-----------------------------------------------------------------------------
+
+    return this._middlePressed || false;
+
+  }, true );
+
+//-----------------------------------------------------------------------------
+  $.expand( TouchInput, 'isMiddleTriggered', function()
+  { // Definition.
+//-----------------------------------------------------------------------------
+
+    return this._currentState.middleTriggered;
+
+  }, true );
+
+//-----------------------------------------------------------------------------
+  $.alias( TouchInput, '_onMouseUp', function( event )
+  { // Aliased _onMouseUp of class TouchInput.
+//-----------------------------------------------------------------------------
+
+    $.alias( event );
+    if ( event.button === 1 ) {
+      this._middlePressed = false;
+      this._onRelease();
+    }
+
+  }, true );
+
+//=============================================================================
+// Bitmap :
+//=============================================================================
+
 //-----------------------------------------------------------------------------
   $.expand( Bitmap, 'loadBase64', function( string )
   { // Definition.
@@ -4763,7 +5181,6 @@ window.TextInputField = TextInputField;
 //-----------------------------------------------------------------------------
 
       const circ = radius * 2;
-
       for ( let i = 0, l = 4; i < l; i++ ) {
         const ox = radius + ( width - circ ) * ( i % 2 );
         const oy = radius + Math.floor( i / 2 ) * ( height - circ );
@@ -4773,12 +5190,82 @@ window.TextInputField = TextInputField;
 
       this.clearRect( x + radius, y, width - circ, height );
       this.clearRect( x, y + radius, width, height - circ );
-
       this.fillRect( x + radius, y, width - circ, height, color );
       this.clearRect( x, y + radius, width, height - circ );
       this.fillRect( x, y + radius, width, height - circ, color );
 
   }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Bitmap, 'bltCrisp', function( src, sx, sy, sw, sh, dx, dy, dw, dh )
+  { // block transfer preserving pixel edges.
+//-----------------------------------------------------------------------------
+
+    if ( !src ) return;
+    src.addLoadListener( function() {
+
+        dx = Math.round( dx );
+        dy = Math.round( dy );
+        dw = Math.round( dw );
+        dh = Math.round( dh );
+
+        sx = Math.round( sx );
+        sy = Math.round( sy );
+        sw = Math.round( sw );
+        sh = Math.round( sh );
+
+        if ( src.width <= 1 || src.height <= 1 ) return;
+
+        const pw = Math.floor( dw ) / sw;
+        const ph = Math.floor( dh ) / sh;
+
+
+        if ( isNaN( sx ) ) sx = 0;
+        if ( isNaN( sy ) ) sy = 0;
+        if ( isNaN( sw ) ) sw = 0;
+        if ( isNaN( sh ) ) sh = 0;
+
+        if ( !isFinite( pw ) || isNaN( pw ) ) return;
+        if ( !isFinite( ph ) || isNaN( ph ) ) return;
+
+        const data = src.context.getImageData( sx, sy, sw, sh ).data;
+
+        for ( let i = 0, l = data.length / 4; i < l; i++ ) {
+          const cIndex = i * 4;
+          const r = data[cIndex + 0];
+          const g = data[cIndex + 1];
+          const b = data[cIndex + 2];
+          const a = data[cIndex + 3] / 255;
+
+          const px = Math.floor( ( i % sw ) * pw );
+          const py = Math.floor( Math.floor( i / sw ) * ph );
+          const color = `rgba(${r}, ${g}, ${b}, ${a})`;
+
+          this.fillRect( Math.floor( dx + px ), Math.floor( dy + py ), Math.ceil( pw ), Math.ceil( ph ), color )
+
+        };
+
+    }.bind( this ) );
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Bitmap, 'drawLine', function( x, y, x2, y2, color, width = 1 )
+  { // draw a line starting at x and y, to x2, and y2.
+//-----------------------------------------------------------------------------
+
+    const context = this.context;
+    context.save();
+    context.strokeStyle = color;
+    context.lineWidth = width + 2;
+
+    context.beginPath();
+    context.moveTo( x, y );
+    context.lineTo( x2, y2 );
+    context.stroke();
+    this._baseTexture.update();
+
+  } );
 
   window.addEventListener('keydown', $.processKeyInput.bind( $ ) );
 
@@ -4815,8 +5302,9 @@ class ButtonListField extends ListField
 //=============================================================================
 
     const top = this.topIndex;
+    const sb = this._scrollbar;
     const ow = this.outlineWidth;
-    const width = this.width - this._scrollbar.width - ow * 2;
+    const width = this.width - ( sb ? sb.width - ow * 2 : 0 );
     const height = this.itemHeight();
     const x = ow;
     const y = height * ( i - top );
@@ -4897,6 +5385,89 @@ class ButtonListField extends ListField
 
 //=============================================================================
 window.ButtonListField = ButtonListField;
+//=============================================================================
+
+//=============================================================================
+class CheckboxListField extends ButtonListField
+{ // CheckboxListField
+
+//=============================================================================
+  constructor( width, maxRows, data )
+  { // Called on object creation.
+//=============================================================================
+
+    super( width, maxRows, data );
+    this._checked = [];
+
+  }
+
+//=============================================================================
+  set index( value )
+  { // set the current index.
+//=============================================================================
+
+    const min = -1;
+    const max = this.data.length - 1;
+
+    this._index = value.clamp( min, max );
+
+    this._checked.includes( this._index ) ?
+      this._checked.remove( this._index ) : this._checked.push( this._index );
+
+    this.refresh();
+
+  }
+
+//=============================================================================
+  itemRect( index )
+  { // return the item rect.
+//=============================================================================
+
+    const rect = super.itemRect( index );
+
+    return rect;
+
+  }
+
+//=============================================================================
+  drawItem( index )
+  { // Definition.
+//=============================================================================
+
+    super.drawItem( index )
+
+    this.drawCheckBox( index );
+
+  }
+
+//=============================================================================
+  drawCheckBox( index )
+  { // draw the checkbox on the button.
+//=============================================================================
+
+    const itemRect = this.itemRect( index );
+
+    const text = this._checked.includes( index ) ? ' ✓' : '';
+    const p = 4;
+    const width = Math.round( itemRect.height - p * 2 );
+    const height = width;
+    const x = Math.round( itemRect.width - width - p );
+    const y = Math.round( itemRect.y + p + 1 );
+    const rect = new Rectangle( x, y, width, height );
+    const r = 4;
+    const c0 = this.index == index ? '#adafb3' : '#4a505b';
+    const c1 = "#1b1d23";
+
+    this.bitmap.drawRoundedRect( x, y, width, height, r, c0 )
+    this.bitmap.drawRoundedRect( x + 1, y + 1, width - 2, height - 2, r, c1 )
+    this.bitmap.drawText( text, x, y, width, height );
+
+  }
+
+}
+
+//=============================================================================
+window.CheckboxListField = CheckboxListField;
 //=============================================================================
 
 //=============================================================================

@@ -4,7 +4,7 @@
 *
 * @author Chaucer
 *
-* @plugindesc | Character Actions : Version - 1.2.1 | Add actin animaitions to your characters.
+* @plugindesc | Character Motions : Version - 3.0.7 | Add motion( or action ) animaitions to your characters.
 *
 * @url http://rosedale-studios.com
 *
@@ -14,10 +14,6 @@
 * ║ (^.^)                    - Rosedale Studios -                    (^.^) ║
 * ║c(")(")                                                          (")(")ↄ║
 * ╚════════════════════════════════════╝
-
-*============================================================================
-*  Requirements :
-*============================================================================
 
 *============================================================================
 *  Instructions :
@@ -69,12 +65,12 @@
 *  ║                                                                      ║
 *  ║ I: Index of thhe follower( 1 being the first follower ).             ║
 *  ║                                                                      ║
-*  ║ N: The name of the motion data the player should use.                ║
+*  ║ N: The name of the motion data the follower should use.              ║
 *  ║                                                                      ║
 *  ╠═══════════════════════════════════╣
 *  ║ Examples ( MV ) :                                                    ║
 *  ╠═══════════════════════════════════╣
-*  ║ set_follower_motion_data name female_knight                          ║
+*  ║ set_follower_motion_data id 5 name female_knight                     ║
 *  ╚═══════════════════════════════════╝
 
 *  ╔════════════╦══════════════════════╗
@@ -87,7 +83,25 @@
 *  ║                                                                      ║
 *  ║ I: The id of the event to add motion data to.                        ║
 *  ║                                                                      ║
-*  ║ N: The name of the motion data the player should use.                ║
+*  ║ N: The name of the motion data the event should use.                 ║
+*  ║                                                                      ║
+*  ╠═══════════════════════════════════╣
+*  ║ Examples ( MV ) :                                                    ║
+*  ╠═══════════════════════════════════╣
+*  ║ set_event_motion_data id 19 name skeleton                            ║
+*  ╚═══════════════════════════════════╝
+
+*  ╔════════════╦══════════════════════╗
+*  ║ Plugin Command :       ║ set_actor_motion_data id I name N          ║
+*  ╠════════════╬══════════════════════╣
+*  ║ Description :          ║ set an actors motion data by name.         ║
+*  ╠════════════╩══════════════════════╣
+*  ║ Arguments :                                                          ║
+*  ╠═══════════════════════════════════╣
+*  ║                                                                      ║
+*  ║ I: The id of the actor to add motion data to.                        ║
+*  ║                                                                      ║
+*  ║ N: The name of the motion data the actor should use.                 ║
 *  ║                                                                      ║
 *  ╠═══════════════════════════════════╣
 *  ║ Examples ( MV ) :                                                    ║
@@ -101,7 +115,7 @@
 * note tags which should be used to achieve this.
 
 *  ╔════════════╦══════════════════════╗
-*  ║ Note Tag :             ║ <motions:NAME>                             ║
+*  ║ Note Tag :             ║ <motion_data:NAME>                             ║
 *  ╠════════════╬══════════════════════╣
 *  ║ Description :          ║ When this actor is in party, the motion    ║
 *  ║                        ║ specified here will be used automatically. ║
@@ -122,7 +136,7 @@
 * attach motion data to an events page!
 
 *  ╔════════════╦══════════════════════╗
-*  ║ Comment :             ║ <motions:NAME>                              ║
+*  ║ Comment :             ║ <motion_data:NAME>                              ║
 *  ╠════════════╬══════════════════════╣
 *  ║ Description :          ║ When this page of the event is active, the ║
 *  ║                        ║ specified here will be used automatically. ║
@@ -187,12 +201,14 @@
 *  ╚═══════════════════════════════════╝
 
 *  ╔════════════╦══════════════════════╗
-*  ║ Plugin Command :       ║ follower_motion motion N wait B            ║
+*  ║ Plugin Command :       ║ follower_motion id J motion N wait B       ║
 *  ╠════════════╬══════════════════════╣
 *  ║ Description :          ║ request follower to start custom motion N. ║
 *  ╠════════════╩══════════════════════╣
 *  ║ Arguments :                                                          ║
 *  ╠═══════════════════════════════════╣
+*  ║                                                                      ║
+*  ║ J: The ID of the follower to request a motion for.                   ║
 *  ║                                                                      ║
 *  ║ N: The name of the motion to start for the follower.                 ║
 *  ║                                                                      ║
@@ -201,16 +217,18 @@
 *  ╠═══════════════════════════════════╣
 *  ║ Examples ( MV ) :                                                    ║
 *  ╠═══════════════════════════════════╣
-*  ║ follower_motion motion slash wait true                               ║
+*  ║ follower_motion id 2 motion slash wait true                          ║
 *  ╚═══════════════════════════════════╝
 
 *  ╔════════════╦══════════════════════╗
-*  ║ Plugin Command :       ║ event_motion motion N wait B               ║
+*  ║ Plugin Command :       ║ event_motion id J motion N wait B          ║
 *  ╠════════════╬══════════════════════╣
 *  ║ Description :          ║ request event to start custom motion N.    ║
 *  ╠════════════╩══════════════════════╣
 *  ║ Arguments :                                                          ║
 *  ╠═══════════════════════════════════╣
+*  ║                                                                      ║
+*  ║ J: The ID of the event to request a motion for.                      ║
 *  ║                                                                      ║
 *  ║ N: The name of the motion to start for the event.                    ║
 *  ║                                                                      ║
@@ -219,9 +237,130 @@
 *  ╠═══════════════════════════════════╣
 *  ║ Examples ( MV ) :                                                    ║
 *  ╠═══════════════════════════════════╣
-*  ║ follower_motion motion throw_bone wait true                          ║
+*  ║ follower_motion id 8 motion throw_bone wait true                     ║
 *  ╚═══════════════════════════════════╝
 
+*  ╔════════════╦══════════════════════╗
+*  ║ Plugin Command :       ║ player_stop_motion                         ║
+*  ╠════════════╬══════════════════════╣
+*  ║ Description :          ║ stop the players looping animation.        ║
+*  ╠════════════╩══════════════════════╣
+*  ║ Examples ( MV ) :                                                    ║
+*  ╠═══════════════════════════════════╣
+*  ║ player_stop_motion                                                   ║
+*  ╚═══════════════════════════════════╝
+
+*  ╔════════════╦══════════════════════╗
+*  ║ Plugin Command :       ║ follower_stop_motion id N                  ║
+*  ╠════════════╬══════════════════════╣
+*  ║ Description :          ║ stop the followers looping animation.      ║
+*  ╠════════════╩══════════════════════╣
+*  ║ Arguments :                                                          ║
+*  ╠═══════════════════════════════════╣
+*  ║                                                                      ║
+*  ║ N: the ID of the follower to stop the motion for.                    ║
+*  ║                                                                      ║
+*  ╠═══════════════════════════════════╣
+*  ║ Examples ( MV ) :                                                    ║
+*  ╠═══════════════════════════════════╣
+*  ║ follower_stop_motion id 1                                            ║
+*  ╚═══════════════════════════════════╝
+
+*  ╔════════════╦══════════════════════╗
+*  ║ Plugin Command :       ║ event_stop_motion id N                     ║
+*  ╠════════════╬══════════════════════╣
+*  ║ Description :          ║ stop the events looping animation.         ║
+*  ╠════════════╩══════════════════════╣
+*  ║ Arguments :                                                          ║
+*  ╠═══════════════════════════════════╣
+*  ║                                                                      ║
+*  ║ N: the ID of the event to stop the motion for.                       ║
+*  ║                                                                      ║
+*  ╠═══════════════════════════════════╣
+*  ║ Examples ( MV ) :                                                    ║
+*  ╠═══════════════════════════════════╣
+*  ║ follower_stop_motion id 5                                            ║
+*  ╚═══════════════════════════════════╝
+*
+*
+*----------------------------------------------------------------------------
+* Additional Notes:
+*----------------------------------------------------------------------------
+*
+*----------------------------------------------------------------------------
+* Walk Animations:
+*----------------------------------------------------------------------------
+*
+*   When creating walk and run motions for a character, it important to
+*   keep in mind, this plugin does NOT follow the default rpg maker walk
+*   cycle format. In MV/MZ, walk sprites utilize 3 frame animations. Below
+*   is an exmaple of how the sprite sheet is layed out, the numbers represent
+*   the index of the animations.
+*
+*   ┌─┬─┬─┐
+*   │1│2│3│ ( Down )
+*   ├─┼─┼─┤
+*   │1│2│3│ ( Left )
+*   ├─┼─┼─┤
+*   │1│2│3│ ( Right )
+*   ├─┼─┼─┤
+*   │1│2│3│ ( Up )
+*   └─┴─┴─┘
+*
+*   The way the animations play in RPG Maker by default, is to default to
+*   frame 2, when a character stands still, but when walking, it animates
+*   in in the following order... 1 -> 2 -> 3 -> 2 -> 1 -> 2 -> 3 -> 2 -> etc...
+*   The NEW way walk cycles is recommended to be formatted, as follows..
+*
+*   ┌─┬─┬─┬─┐
+*   │1│2│3│4│ ( Down )
+*   ├─┼─┼─┼─┤
+*   │1│2│3│4│ ( Left )
+*   ├─┼─┼─┼─┤
+*   │1│2│3│4│ ( Right )
+*   ├─┼─┼─┼─┤
+*   │1│2│3│4│ ( Up )
+*   └─┴─┴─┴─┘
+*
+*   Animations in the above example, will execute in the following order,
+*   1 -> 2 -> 3 -> 4 -> 1 -> 2 -> 3 -> etc...
+*   It is HIGHLY recommended to not use the default 3 frame walk sheets
+*   that rpg maker uses by default, as they will look a bit odd.
+*   Instead, it is recommended( not required ) to use a MINIMUM of 4 frame
+*   walk sheets, you can easily modify the standard rpg maker sprites in
+*   your favorite editing software to this new format, by simply copying
+*   frame 2 of each direction, and pasting it into a newly added frame 4
+*   slot( see above examples for reference ).
+*
+*----------------------------------------------------------------------------
+* 8 Directional Sprite Sheets:
+*----------------------------------------------------------------------------
+*
+*    When enabling 8 directional sprite sheets for motion data, please follow
+*    the format specified below. In this example, we'll assume this sheet
+*    uses the "$" symbol in it's name( or only contains a single actor ).
+*    Assuming the arrows in each box are the direction the player faces
+*    in each frame of the sprite sheet.
+*
+*    Default Spritesheet:                 8 Direction Sprite Sheet:
+*   ┌─┬─┬─┐                               ┌─┬─┬─┐
+*   │↓│↓│↓│                               │↙│↙│↙│
+*   ├─┼─┼─┤                               ├─┼─┼─┤
+*   │←│←│←│                               │↓│↓│↓│
+*   ├─┼─┼─┤                               ├─┼─┼─┤
+*   │→│→│→│                               │↘│↘│↘│
+*   ├─┼─┼─┤                               ├─┼─┼─┤
+*   │↑│↑│↑│                               │←│←│←│
+*   └─┴─┴─┘                               ├─┼─┼─┤
+*                                                │→│→│→│
+*                                                ├─┼─┼─┤
+*                                                │↖│↖│↖│
+*                                                ├─┼─┼─┤
+*                                                │↑│↑│↑│
+*                                                ├─┼─┼─┤
+*                                                │↗│↗│↗│
+*                                                └─┴─┴─┘
+*
 *============================================================================
 *  Terms Of Use :
 *============================================================================
@@ -280,6 +419,80 @@
 * ● Version : 1.2.1
 * ● Date : 14/01/2024
 *   ✩ Fix - a minor issue with the collision altering plugin.
+
+* ● Version : 1.2.2
+* ● Date : 14/01/2024
+*   ✩ Fix - VisuMZ_1_EventsMoveCore bitmap smoothing setting is not honored.
+
+* ● Version : 2.0.0
+* ● Date : 03/02/2024
+*   ★ Add - jump animation
+*   ★ Add - climb
+*   ★ Add - loop option for custom animations
+*   ★ Add - stop plugin command for looping custom animations
+*   ★ Add - 8 directional sprite support independent of the collision plugin.
+
+* ● Version : 2.0.1
+* ● Date : 11/02/2024
+*   ✩ Fix - wait for completion was enabled even if set to false.
+
+* ● Version : 2.0.2
+* ● Date : 12/02/2024
+*   ✩ Fix - walk & dash motions were not playing properly w/o Collision Plugin.
+*   ✩ Fix - typos in plugin.
+
+* ● Version : 2.1.0
+* ● Date : 26/02/2024
+*   ★ Add - switch for custom animations to prevent preloading into memory
+*   ✩ Fix - dash and walk motion change frequency.
+
+* ● Version : 3.0.0
+* ● Date : 19/04/2024
+*   ★ Add - Walk Speed Modifier per motion.
+*   ★ Add - Change Actor Motion Data command.
+*   ★ Add - Large rewrite, to improve stability, and performance.
+*   ★ Add - more documentation, and cleaned up existing documentation.
+*   ✩ Change - note tag to set data from <motions:N> to <motion_data:N>.
+*   ✩ Fix - crash when opening menu/changing map mid-motion.
+*   ✩ Fix - Issue with changing player/follower sprite via plugin command.
+*   ✩ Fix - Inability to clear motion data with a blank string in a command.
+*   ✩ Fix - Stop motion commands were unavailable in MZ.
+
+* ● Version : 3.0.1
+* ● Date : 20/04/2024
+*   ✩ Fix - Motion Data List was broken in MV!
+
+* ● Version : 3.0.2
+* ● Date : 20/04/2024
+*   ✩ Fix - Set Motion Data commands not working!
+
+* ● Version : 3.0.3
+* ● Date : 30/04/2024
+*   ✩ Fix - follower motion data was not being set properly from actor notes
+*   ✩ Fix - issue with setting motion data for events via plugin command.
+*   ✩ Fix - issue with constantly setting motion data.
+
+* ● Version : 3.0.4
+* ● Date : 26/05/2024
+*   ✩ Fix - Utils.encodeURI is not a function error in MV.
+
+* ● Version : 3.0.5
+* ● Date : 29/05/2024
+*   ✩ Fix - clearing motion data did not work if note tag was used.
+*   ✩ Fix - clearing motion data error in MV.
+*   ✩ Fix - A warning appears( instead of crash ), if wrong motion name called.
+*   ✩ Fix - Error in clearing motion bitmaps on MV.
+
+* ● Version : 3.0.6
+* ● Date : 30/05/2024
+*   ✩ Fix - Crash when followers have no actor data.
+*   ✩ Fix - Error when assigning follower motion data.
+*   ✩ Fix - Set actor motion data, did not show until screen is refreshed.
+
+* ● Version : 3.0.7
+* ● Date : 09/06/2024
+*   ✩ Fix - error with climb motion.
+*   ✩ Fix - bitmap being disposed too early( crash in MV & visual bug in MZ ).
 
 *============================================================================
 *  Contact Me :
@@ -340,8 +553,24 @@
 * @default
 * @type text
 
+* @command set_actor_motion_data
+* @text Set Actor Motion Data
+* @desc Set the actors motion data to the data with the name specified.
+
+* @arg id
+* @text Actor ID
+* @desc The ID of the actor to specify motion data for.
+* @default 1
+* @type number
+
+* @arg name
+* @text Data Name
+* @desc The name of the data to read motions from.
+* @default
+* @type text
+
 * @command player_motion
-* @text Player Motion
+* @text Request Player Motion
 * @desc Start a custom motion for the player.
 
 * @arg motion
@@ -402,6 +631,34 @@
 * @default false
 * @type boolean
 
+* @command player_stop_motion
+* @text Stop player motion
+* @desc Stop the current motion the player is performing and return to idle animation.
+
+* @command event_stop_motion
+* @text Stop event motion
+* @desc Stop the current motion the event is performing and return to idle animation.
+
+* @arg id
+* @text Event ID
+* @desc The id of the event to stop the motion for.
+* @default 1
+* @type number
+* @min 1
+* @max 1000
+
+* @command follower_stop_motion
+* @text Stop event motion
+* @desc Stop the current motion the follower is performing and return to idle animation.
+
+* @arg id
+* @text Follower Index
+* @desc The index of the follower behind the player to stop the motion for.
+* @default 1
+* @type number
+* @min 1
+* @max 10
+
 * @param motionData
 * @text Motion Data List
 * @desc A list of all custom anitmation sheets.
@@ -418,6 +675,21 @@
 * @default
 * @type text
 
+* @param dir8
+* @text 8 Directional
+* @desc Should this sprite use 8 directions instead of the default 4?
+* @default false
+* @type boolean
+
+* @param speedMod
+* @text Move Speed Modifier
+* @desc Modifier for move speed animation, the higher the value, the faster the walk animation will play( affects run as well! ).
+* @default 0.00
+* @type number
+* @decimals 2
+* @min 0.00
+* @max 8.00
+
 * @param idle
 * @text Idle
 * @desc The animation used for the character when idling.
@@ -432,7 +704,19 @@
 
 * @param dash
 * @text Dash
-* @desc The animation  when character is dash animation.
+* @desc The animation  when character is dashing/running.
+* @default
+* @type struct<WalkAnimation>
+
+* @param climb
+* @text Climb
+* @desc The animation  when character is climbing a ladder.
+* @default
+* @type struct<WalkAnimation>
+
+* @param jump
+* @text Jump
+* @desc The animation when the character is jumping.
 * @default
 * @type struct<WalkAnimation>
 
@@ -524,6 +808,12 @@
 * @dir img/characters/
 * @require 1
 
+* @param loop
+* @text Loop
+* @desc Should this animatin loop?( if set to true, the animation will loop infinitely, and plugin command wait will NOT work! ).
+* @default false
+* @type boolean
+
 * @param frames
 * @text Frames
 * @desc How many animation frames are in this animation( deffault is 3 ).
@@ -557,6 +847,12 @@
 * @type nuumer
 * @max 10000
 * @min -10000
+
+* @param preload
+* @text Important Motion
+* @desc Should this motion be preloaded into memory( best used for commonly used animations ).
+* @default false
+* @type boolean
 
 * @param ---COLLISION PLUGIN---
 * @desc Below are settings only available for use with the collision altering plugin.
@@ -627,14 +923,12 @@
 
 */
 
-// TODO: motion does not honor velocity setting.. instead uses input velocity
-
 //=============================================================================
   var Imported = Imported || {};
-  Imported['Character Actions'.toUpperCase()] = true;
+  Imported['Character Motions'.toUpperCase()] = true;
 //=============================================================================
   var Chaucer = Chaucer || {};
-  Chaucer.charActions = {};
+  Chaucer.charMotions = {};
 //=============================================================================
 
 ( function ( $ ) { // CONFIG:
@@ -718,7 +1012,13 @@
         $.alias = {};
 
       };
+
       ( $.params.motionData || [] ).forEach( list => {
+        if ( list['idle'] ) list['idle'].name = 'idle';
+        if ( list['walk'] ) list['walk'].name = 'walk';
+        if ( list['dash'] ) list['dash'].name = 'dash';
+        if ( list['jump'] ) list['jump'].name = 'jump';
+        if ( list['climb'] ) list['climb'].name = 'climb';
           list.customAnimations.forEach( animation => {
               list[animation.name] = animation;
             } );
@@ -730,8 +1030,8 @@
     //Create plugin information.
   //============================================================================
 
-    const identifier =  /(Character Actions) : Version - (\d+.\d+.\d+)/;
-    // $._nameError = 'Character Actions was unable to load! Please revert any changes back to normal!';
+    const identifier =  /(Character Motions) : Version - (\d+.\d+.\d+)/;
+    // $._nameError = 'Character Motions was unable to load! Please revert any changes back to normal!';
 
 
     $.makePluginInfo( $, identifier );
@@ -819,7 +1119,7 @@
   }
 
 //=============================================================================
-  $.getMotionData = function ( name )
+  $.findMotionData = function ( name )
   { // retrn the motion with the name specified.
 //=============================================================================
 
@@ -851,32 +1151,125 @@
 
     }
 
-
 //=============================================================================
 // ALIASED CODE BELOW THIS LINE!
 //=============================================================================
 
+//=============================================================================
+// Utils :
+//=============================================================================
+if ( Utils.RPGMAKER_NAME == 'MV' ) {
+  Utils.encodeURI = function( str ) {
+      return encodeURIComponent( str ).replace( /%2F/g, "/" );
+  };
+}
+//=============================================================================
+// Game_Switches :
+//=============================================================================
+
+//-----------------------------------------------------------------------------
+  $.alias( Game_Switches, 'onChange', function()
+  { // Aliased onChange of class Game_Switches.
+//-----------------------------------------------------------------------------
+
+    $.alias();
+    this.refreshCharactersMotionData();
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Game_Switches, 'refreshCharactersMotionData', function()
+  { // refresh player and follower motion data.
+//-----------------------------------------------------------------------------
+
+    const followers = $gamePlayer._followers._data;
+
+    $gamePlayer.refreshMotionData();
+    followers.forEach( char => char.refreshMotionData() );
+
+  }, false );
+
+//=============================================================================
+// Game_BattlerBase :
+//=============================================================================
+
+//-----------------------------------------------------------------------------
+  $.alias( Game_BattlerBase, 'initMembers', function()
+  { // Aliased initMembers of class Game_BattlerBase.
+//-----------------------------------------------------------------------------
+
+    $.alias();
+    this._motionData = null;
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Game_BattlerBase, 'setMotionData', function( data )
+  { // set the motion data to the value specified.
+//-----------------------------------------------------------------------------
+
+    this._motionData = data || null;
+
+  }, false );
+
+//=============================================================================
+// Game_Actor :
+//=============================================================================
+
+//-----------------------------------------------------------------------------
+  $.alias( Game_Actor, 'initialize', function( actorId )
+  { // Aliased initialize of class Game_Actor.
+//-----------------------------------------------------------------------------
+
+    $.alias( actorId );
+    this.initializeMotionData();
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Game_Actor, 'initializeMotionData', function()
+  { // initialize the motion data for the actor.
+//-----------------------------------------------------------------------------
+
+    const meta = this.actor().meta;
+    let data = $.findMotionData( meta.motion_data || meta.motions || '' );
+
+    this._motionData = data || null;
+
+  }, false );
 
 //=============================================================================
 // Game_CharacterBase :
 //=============================================================================
 
 //-----------------------------------------------------------------------------
-  $.alias( Game_CharacterBase, 'initMembers', function()
-  { // Aliased initMembers of class Game_CharacterBase.
+  $.alias( Game_CharacterBase, 'initialize', function()
+  { // Aliased initialize of class Game_CharacterBase.
 //-----------------------------------------------------------------------------
 
     $.alias();
-    this._motions = null;
+    this._motionData = null;
+    this._motion = 'idle';
 
   }, false );
 
 //-----------------------------------------------------------------------------
-  $.expand( Game_CharacterBase, 'setMotions', function( data )
-  { // set the motin data.
+  $.alias( Game_CharacterBase, 'setImage', function( charName, charIndex )
+  { // Aliased setImage of class Game_CharacterBase.
 //-----------------------------------------------------------------------------
 
-    this._motions2 = data;
+    $.alias( charName, charIndex );
+    this._motionData = null;
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Game_CharacterBase, 'getMotion', function( motionName )
+  { // request a motion to be played.
+//-----------------------------------------------------------------------------
+
+    if ( !this.hasMotions() ) return null;
+    return this._motionData.motions[motionName];
 
   }, false );
 
@@ -885,468 +1278,163 @@
   { // request a motion to be played.
 //-----------------------------------------------------------------------------
 
-    this._requestMotion = motion;
+    this._requestedMotion = motion;
 
   }, false );
 
 //-----------------------------------------------------------------------------
-  $.expand( Game_CharacterBase, 'fetchMotion', function()
+  $.expand( Game_CharacterBase, 'stopMotion', function()
+  { // stop the current motion.
+//-----------------------------------------------------------------------------
+
+    this._requestedMotion = 'idle';
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Game_CharacterBase, 'isMotionChanged', function( motionData )
+  { // return if the motion will be changed.
+//-----------------------------------------------------------------------------
+
+    let name0 = this._motionData ? this._motionData.name : '';
+    let name1 = motionData ? motionData.name : '';
+
+    return name0 != name1;
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Game_CharacterBase, 'refreshMotionData', function()
+  { // refresh the motion data whenever the actor is changed/when necesary.
+//-----------------------------------------------------------------------------
+
+    const motionData = this.initialMotionData();
+
+    if ( this.isMotionChanged( motionData ) && !this._motionLoading ) {
+      if ( motionData )
+        this.preloadMotionData( motionData );
+
+      else
+        this._motionData = null;
+
+    }
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Game_CharacterBase, 'initialMotionData', function()
   { // return animation data.
 //-----------------------------------------------------------------------------
 
-    return this._motions2;
+    return null;
 
   }, false );
 
 //-----------------------------------------------------------------------------
-  $.alias( Game_CharacterBase, 'update', function()
-  { // Aliased updat of class Game_CharacterBase.
+  $.expand( Game_CharacterBase, 'ensureMotionValid', function( hasMotions )
+  { // ensure motion is valid according to if we have data or not.
 //-----------------------------------------------------------------------------
 
-    $.alias();
-    this.updateMotion();
+    if ( hasMotions && !this._motion ) this.refreshMotion();
 
   }, false );
 
 //-----------------------------------------------------------------------------
-  $.expand( Game_CharacterBase, 'updateMotion', function()
-  { // update the current motion so it refreshes/loads when neeeded.
+  $.expand( Game_CharacterBase, 'startRequestedMotion', function()
+  { // start the requested motion.
 //-----------------------------------------------------------------------------
 
-    const motions = this.fetchMotion();
-
-    if ( !this._motionLoading && this._motions != motions ) {
-      if ( motions ) this.refreshMotions( motions );
+    let name = this._requestedMotion;
+    let data = this._motionData[name];
+    if ( !data ) {
+      let error = `Motion "${name}", was not found, please make sure the
+      name entered is correct. The name specified is case sensetive!`;
+      return console.warn( error );
     }
+    let bitmap = ImageManager.loadCharacter( data.filename );
+    this._preloadingMotion = false;
 
-  }, false );
+    if ( bitmap.isReady() ) {
+      this.startMotion( name );
+      this.cacheMotionOffset( name, bitmap );
+      this._requestedMotion = null;
 
-//-----------------------------------------------------------------------------
-  $.expand( Game_CharacterBase, 'refreshMotions', function( motions )
-  { // refresh the motions.
-//-----------------------------------------------------------------------------
-
-    if ( !motions ) return this._motions = null;
-
-    const keys = Object.keys( motions );
-    this._motionLoading = true;
-    let bitmaps = [];
-
-    for ( let i = 0, l = keys.length; i < l; i++ ) {
-      if ( motions[keys[i]] && motions[keys[i]].filename ) {
-        bitmaps.push( ImageManager.loadCharacter( motions[keys[i]].filename ) );
-      };
-    };
-
-    bitmaps.forEach( bitmap => {
-
+    } else {
+      this._preloadingMotion = true;
       bitmap.addLoadListener( function() {
-        this._motionLoading = bitmaps.some( b => !b.isReady() );
-        if ( !this._motionLoading ) this._motions = JsonEx.parse( JsonEx.stringify( motions ) );
+        this.startRequestedMotion();
       }.bind( this ) );
-    } );
-
-
-  }, false );
-
-//-----------------------------------------------------------------------------
-  $.expand( Game_Character, 'hasMotions', function()
-  { // return if the character has motions setup.
-//-----------------------------------------------------------------------------
-
-    return !!this._motions;
-
-  }, false );
-
-//=============================================================================
-  $.expand( Game_CharacterBase, 'isCustomMotion', function( motion )
-  { // return if the character is using a custom motion.
-//=============================================================================
-
-    if ( !this._motions ) return false;
-    if ( motion == 'idle' ) return false;
-    if ( motion == 'walk' ) return false;
-    if ( motion == 'dash' ) return false;
-
-    return !!motion;
-
-  } );
-
-//-----------------------------------------------------------------------------
-  $.alias( Game_CharacterBase , 'getTraction', function()
-  { // Aliased getTraction of class Game_CharacterBase .
-//-----------------------------------------------------------------------------
-
-    let traction = $.alias();
-
-    if ( this.isCustomMotion( this._motion ) ) {
-      const data = this._motions[this._motion];
-      if ( data ) traction *= data.traction;
-    }
-
-    return traction;
-
-  }, false );
-
-//=============================================================================
-// Game-Event :
-//=============================================================================
-
-//-----------------------------------------------------------------------------
-  $.alias( Game_Event, 'initMembers', function()
-  { // Aliased initMembers of class Game_Event.
-//-----------------------------------------------------------------------------
-
-    $.alias();
-    this._motions = null;
-
-  }, false );
-
-//-----------------------------------------------------------------------------
-  $.alias( Game_Event, 'fetchMotion', function()
-  { // Aliased fetchMotion of class Game_Event.
-//-----------------------------------------------------------------------------
-
-    return this._motions2;
-
-  }, false );
-
-//-----------------------------------------------------------------------------
-  $.expand( Game_Event, 'clearPageMotions', function()
-  { // clear the motions for this page.
-//-----------------------------------------------------------------------------
-
-    this._motions2 = null;
-
-  }, false );
-
-//-----------------------------------------------------------------------------
-  $.alias( Game_Event, 'clearPageSettings', function()
-  { // Aliased clearPageSettings of class Game_Event.
-//-----------------------------------------------------------------------------
-
-    $.alias();
-    this.clearPageMotions();
-
-  }, false );
-
-//-----------------------------------------------------------------------------
-  $.expand( Game_Event, 'setMotions', function( motionsName )
-  { // set the motions to the value proviided.
-//-----------------------------------------------------------------------------
-
-    this._motions2 = $.getMotionData( motionsName || '' ) || null;
-
-  }, false );
-
-//=============================================================================
-  $.expand( Game_Event, 'setNotetagDirection', function( d )
-  { // set the direction specified via note tag.
-//=============================================================================
-
-    this._originalDirection = d;
-    const df = this.directionFix();
-    this.setDirectionFix( false );
-    this.setDiagonalDirection( this._originalDirection );
-    this.setDirectionFix( df );
-
-  }, this );
-
-//-----------------------------------------------------------------------------
-  $.expand( Game_Event, 'setupPageMotions', function()
-  { // setup mmotions for the current page.
-//-----------------------------------------------------------------------------
-
-    const list = this.page() ? this.list() : [];
-
-    for ( let i = 0, l = list.length; i < l; i++ ) {
-
-      const { code, parameters } = list[i];
-      if ( code != 108 && code != 408 ) continue;
-      if ( parameters[0].match( /\<\s*motions\s*:\s*(.*?)\s*>/ ) ) {
-        this.setMotions( RegExp.$1.trim() );
-
-      } else if ( parameters[0].match( /\<\s*direction\s*:\s*(\d+)\s*>/ ) ) {
-        this.setNotetagDirection( Number( RegExp.$1 ) );
-
-      }
-
-    };
-
-
-  }, false );
-
-//-----------------------------------------------------------------------------
-  $.alias( Game_Event, 'setupPageSettings', function()
-  { // Aliased setupPageSettings of class Game_Event.
-//-----------------------------------------------------------------------------
-
-    $.alias();
-    this.setupPageMotions();
-
-  }, false );
-
-//-----------------------------------------------------------------------------
-  $.alias( Game_Event, 'updateSelfMovement', function()
-  { // Aliased updateSelfMovement of class Game_Event.
-//-----------------------------------------------------------------------------
-
-    if ( this.hasMotions() && this.isCustomMotion( this._motion ) ) return;
-
-    $.alias();
-
-  }, false );
-
-//=============================================================================
-// Game_Player :
-//=============================================================================
-
-//-----------------------------------------------------------------------------
-  $.expand( Game_Player, 'fetchMotion', function()
-  { // return animation data for the character.
-//-----------------------------------------------------------------------------
-
-    const actor = $gameParty.leader();
-    const meta = actor ? actor.actor().meta : {};
-
-    return this._motions2 || $.getMotionData( meta.motions || '' );
-
-  }, false );
-
-//-----------------------------------------------------------------------------
-  $.alias( Game_Player, 'canMove', function()
-  { // Aliased canMove of class Game_Player.
-//-----------------------------------------------------------------------------
-
-    if ( this.isCustomMotion( this._motion ) ) return false;
-    if ( this.isCustomMotion( this._requestMotion ) ) return false;
-
-    return $.alias();
-
-  }, false );
-
-//=============================================================================
-// Game_Follower :
-//=============================================================================
-
-//-----------------------------------------------------------------------------
-  $.expand( Game_Follower, 'fetchMotion', function()
-  { // return animation data for the character.
-//-----------------------------------------------------------------------------
-
-    const memberIndex = $gamePlayer._followers._data._memberIndex;
-    const actor = $gameParty.members()[memberIndex];
-    const meta = actor ? actor.actor().meta : {};
-
-    return this._motions2 || $.getMotionData( meta.motions || '' );
-
-  }, false );
-
-//-----------------------------------------------------------------------------
-  $.expand( Game_Follower, 'fetchMotion', function()
-  { // return animation data for the character.
-//-----------------------------------------------------------------------------
-
-    const actor = this.actor();
-    const meta = actor ? actor.actor().meta : {};
-
-    return $.getMotionData( meta.motions || '' );
-
-  }, false );
-
-//=============================================================================
-// Sprite_Character :
-//=============================================================================
-
-//-----------------------------------------------------------------------------
-  $.alias( Sprite_Character, 'initMembers', function()
-  { // Aliased initMembers of class Sprite_Character.
-//-----------------------------------------------------------------------------
-
-    $.alias();
-    this._motion = 'idle';
-    this._motionCount = 0;
-    this._motionName = '';
-
-  }, false );
-
-//-----------------------------------------------------------------------------
-  $.expand( Sprite_Character, 'hasMotions', function()
-  { // retrun if the character has motions.
-//-----------------------------------------------------------------------------
-
-    return this._character && this._character._motions;
-
-  }, false );
-
-//-----------------------------------------------------------------------------
-  $.expand( Sprite_Character, 'motionData', function( motionName )
-  { // return motion data from the name.
-//-----------------------------------------------------------------------------
-
-    return this._character._motions[motionName];
-
-  }, false );
-
-//-----------------------------------------------------------------------------
-  $.alias( Sprite_Character, 'update', function()
-  { // Aliased update of class Sprite_Character.
-//-----------------------------------------------------------------------------
-
-    this.updateMotion();
-    $.alias();
-
-  }, false );
-
-//-----------------------------------------------------------------------------
-  $.alias( Sprite_Character, 'isEmptyCharacter', function()
-  { // Aliased isEmptyCharacter of class Sprite_Character.
-//-----------------------------------------------------------------------------
-
-    return $.alias() && !this._motionName; 
-
-
-  }, false );
-
-//-----------------------------------------------------------------------------
-  $.alias( Sprite_Character, 'isImageChanged', function()
-  { // Aliased isImageChanged of class Sprite_Character.
-//-----------------------------------------------------------------------------
-
-    if ( this.hasMotions() ) {
-      const data = this.motionData( this._motion );
-      return this._motionName != ( data ? data.filename : '' );
-
-    } else {
-      return $.alias();
 
     }
 
   }, false );
 
 //-----------------------------------------------------------------------------
-  $.alias( Sprite_Character, 'updateBitmap', function()
-  { // Aliased updateBitmap of class Sprite_Character.
+  $.expand( Game_CharacterBase, 'cacheMotionOffset', function( name, bitmap )
+  { // cache the motion offset.
 //-----------------------------------------------------------------------------
 
-    if ( this.hasMotions() && this.isImageChanged() ) {
-      this._motionName = this.motionData( this._motion ).filename;
-      this.setMotionBitmap();
+    const data = this.getMotion( name );
 
-    } else {
-      $.alias();
+    if ( data && bitmap && !data.offset ) {
+      const dir8 = this.is8DirSprite();
+      const bigChar = ImageManager.isBigCharacter( data.filename );
+      const width = bitmap.width / data.frames;
+      const height = bitmap.height / ( ( dir8 || !bigChar ) ? 8 : 4 )
 
-    }
+      let ox = ( data.x || 0 ) / width;
+      let oy = ( data.y || 0 ) / height;
 
-  }, false );
-
-//-----------------------------------------------------------------------------
-  $.expand( Sprite_Character, 'setMotionBitmap', function()
-  { // set the bitmap for motion.
-//-----------------------------------------------------------------------------
-
-    this.bitmap = ImageManager.loadCharacter( this._motionName );
-    this._isBigCharacter = true;
-
-  }, false );
-
-//-----------------------------------------------------------------------------
-  $.expand( Sprite_Character, 'updateMotion', function()
-  { // update the motion of the character.
-//-----------------------------------------------------------------------------
-
-    if ( this.hasMotions() ) {
-
-      if ( !this._motion ) this.refreshMotion();
-      //
-      this._motionCount++;
-      const current = this._motionCount;
-      let { frames, duration } = this.motionData( this._motion );
-      duration = duration || ( this._character.animationWait() * 3 );
-
-      if ( this._motion == 'idle' && this._character.isMoving() ) {
-        this.refreshMotion();
-
-      } else if ( ['walk', 'dash'].includes( this._motion ) && !this._character.isMoving() ) {
-
-        this.refreshMotion();
-
-      } else if ( this._character._requestMotion ) {
-        this.startMotion( this._character._requestMotion );
-        this._character._requestMotion = null;
-
-      } else if ( current < duration ) {
-        this._pattern = Math.floor( ( current / duration ) * frames );
-
-      } else {
-        this.refreshMotion();
-
-      }
-
-      this.updateMotionAnchor();
-
-    } else if ( this._motionName ) {
-      this.clearMotion();
-
-    }
-
-  }, false );
-
-//-----------------------------------------------------------------------------
-  $.expand( Sprite_Character, 'clearMotion', function()
-  { // clear motion data after removing a motion.
-//-----------------------------------------------------------------------------
-
-    this._motionName = '';
-    this._characterName = '';
-    this._tileId = 0;
-
-  }, false );
-
-//-----------------------------------------------------------------------------
-  $.expand( Sprite_Character, 'updateMotionAnchor', function()
-  { // update the anchor position of the sprite.
-//-----------------------------------------------------------------------------
-
-    const data = this.motionData( this._motion );
-
-    if ( data && this.bitmap ) {
-      const width = this.patternWidth();
-      const height = this.patternHeight();
-      let { x, y } = data;
-
-      let ox = ( x || 0 ) / width;
-      let oy = ( y || 0 ) / height;
-
-      this.anchor.x = 0.5 + ( isNaN( ox ) ? 0 : ox );
-      this.anchor.y = 1 + ( isNaN( oy ) ? 0 : oy );
+      data.offset = new Point( isNaN( ox ) ? 0 : ox, isNaN( oy ) ? 0 : oy )
 
     }
 
   }, false );
 
 //=============================================================================
-  $.expand( Sprite_Character, 'startMotion', function ( motionName )
+  $.expand( Game_CharacterBase, 'startMotion', function ( motionName )
   { // start the motion.
 //=============================================================================
 
-    // if ( this._character && this._motion != motionName ) {
-      this._character._motion = motionName;
-      this._motion = motionName;
-      this._motionCount = 0;
-      this._pattern = 0;
+    if ( motionName == null ) return;
+    let lastMotion = this._motion;
+    this._motion = motionName;
+    this._animationCount = 0;
+    this._pattern = 0;
 
-      this.startVelocityForMotion();
-      this.startSeForMotion();
-      this.updateBitmap();
-      this.updateFrame();
-
-    // }
+    this.startVelocityForMotion();
+    this.startSeForMotion();
 
   } );
 
 //-----------------------------------------------------------------------------
-  $.expand( Sprite_Character, 'getLeft90', function( d )
+  $.expand( Game_CharacterBase, 'clearMotionBitmap', function( motionName )
+  { // clear the last used motion from memory if necessary.
+//-----------------------------------------------------------------------------
+
+    const data = this._motionData[motionName];
+    if ( data && !this.isMotionPreloaded( data.name ) ) {
+      let key = 'img/characters/' + Utils.encodeURI( data.filename ) + '.png';
+      if ( Utils.RPGMAKER_NAME == 'MZ' ) {
+        ImageManager.loadCharacter( data.filename ).destroy();
+        delete ImageManager._cache[key];
+
+      } else {
+        const bitmap = ImageManager.loadCharacter( data.filename );
+        bitmap.__baseTexture.destroy();
+        bitmap.__baseTexture = null;
+        if ( bitmap.__canvas ) {
+          bitmap.__canvas.width = 0;
+          bitmap.__canvas.height = 0;
+          bitmap.__canvas = null;
+        }
+      }
+    }
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Game_CharacterBase, 'getLeft90', function( d )
   { // return the direction directly to the left of the current direction.
 //-----------------------------------------------------------------------------
 
@@ -1375,32 +1463,31 @@
   }, false );
 
 //-----------------------------------------------------------------------------
-  $.expand( Sprite_Character, 'startVelocityForMotion', function()
+  $.expand( Game_CharacterBase, 'startVelocityForMotion', function()
   { // start characters velocity for motion.
 //-----------------------------------------------------------------------------
 
-    const data = this.motionData( this._motion );
+    const data = this.getMotion( this._motion );
 
     if ( data && Chaucer.CAP ) {
 
-      let character = this._character;
       const velocity = data.velocty || data.velocity;
-      let forward = this._character.direction();
-      let backward = character.reverseDir( forward );
+      let forward = this.direction();
+      let backward = this.reverseDir( forward );
       let left = this.getLeft90( forward );
-      let right = character.reverseDir( left );
+      let right = this.reverseDir( left );
 
       if ( velocity == 'forward' ) {
-        character.velocity = character.getVectorFromDirection( forward )
+        this.velocity = this.getVectorFromDirection( forward )
 
       } else if ( velocity == 'backward' ) {
-        character.velocity = character.getVectorFromDirection( backward )
+        this.velocity = this.getVectorFromDirection( backward )
 
       } else if ( velocity == 'left' ) {
-        character.velocity = character.getVectorFromDirection( left )
+        this.velocity = this.getVectorFromDirection( left )
 
       } else if ( velocity == 'right' ) {
-        character.velocity = character.getVectorFromDirection( right )
+        this.velocity = this.getVectorFromDirection( right )
 
       }
 
@@ -1409,11 +1496,11 @@
   }, false );
 
 //-----------------------------------------------------------------------------
-  $.expand( Sprite_Character, 'startSeForMotion', function()
+  $.expand( Game_CharacterBase, 'startSeForMotion', function()
   { // start se for the motion.
 //-----------------------------------------------------------------------------
 
-    const data = this.motionData( this._motion );
+    const data = this.getMotion( this._motion );
 
     if ( data && data.audio ) {
       setTimeout(function () {
@@ -1424,13 +1511,122 @@
   }, false );
 
 //-----------------------------------------------------------------------------
-  $.expand( Sprite_Character, 'hasDash', function()
+  $.expand( Game_CharacterBase, 'requestingMotion', function()
+  { // return if we are requesting a motion.
+//-----------------------------------------------------------------------------
+
+    return !!this._requestedMotion && !this._preloadingMotion;
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.alias( Game_CharacterBase, 'updateAnimation', function()
+  { // Aliased updateAnimation of class Game_CharacterBase.
+//-----------------------------------------------------------------------------
+
+    if ( this.hasMotions() ) {
+      this.ensureMotionValid( this.hasMotions() );
+      if ( !this.hasMotions() ) return;
+      if ( this.needsMotionRefresh() ) this.refreshMotion();
+      if ( this.requestingMotion() ) this.startRequestedMotion();
+      this.updateMotionAnimation();
+
+    } else {
+      $.alias();
+
+    }
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.alias( Game_CharacterBase, 'straighten', function()
+  { // Aliased straighten of class Game_CharacterBase.
+//-----------------------------------------------------------------------------
+
+    if ( this.hasMotions() ) return;
+    $.alias();
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Game_CharacterBase, 'updateMotionAnimation', function()
+  { // update the animation for motions.
+//-----------------------------------------------------------------------------
+
+    this.updateAnimationCount();
+
+    const current = this._animationCount;
+
+    let { frames } = this.getMotion( this._motion );
+    duration = this.animationWait();
+
+    this._pattern = Math.floor( ( current / duration ) * frames );
+    if (this._animationCount >= this.animationWait()) {
+        this._animationCount = 0;
+        this._pattern = 0;
+
+        this.refreshMotion();
+
+    }
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Game_CharacterBase, 'isClimbChange', function()
+  { // return if we are changing climb motions.
+//-----------------------------------------------------------------------------
+
+    if ( this._motion == 'climb' && !this.isOnLadder() ) return true;
+    if ( this._motion != 'climb' && this.isOnLadder() ) return true;
+    return false;
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Game_CharacterBase, 'isJumpChange', function()
+  { // return if we are changing climb motions.
+//-----------------------------------------------------------------------------
+
+    if ( this._motion == 'jump' && !this.isJumping() ) return true;
+    if ( this._motion != 'jump' && this.isJumping() ) return true;
+    return false;
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Game_CharacterBase, 'isMoveChange', function()
+  { // if we have changed from moving to stopping or vica versa.
+//-----------------------------------------------------------------------------
+
+    let isMoving = this.isMoving();
+    let isDashing = this.isDashing();
+    let wasWalking = ['walk', 'dash'].includes( this._motion );
+
+    if ( !isDashing && this._motion == 'dash' ) return true;
+    if ( isDashing && this._motion == 'walk' ) return true;
+    if ( this._motion == 'idle' && isMoving ) return true;
+    if ( wasWalking && !isMoving ) return true;
+
+    return false;
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Game_CharacterBase, 'needsMotionRefresh', function()
+  { // return if the motion needs to be refreshed.
+//-----------------------------------------------------------------------------
+
+    return this.isJumpChange() || this.isClimbChange() || this.isMoveChange();
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Game_CharacterBase, 'hasDashMotion', function()
   { // return if the character has a dash sprite.
 //-----------------------------------------------------------------------------
 
-    const character = this._character;
-    if ( character && character._motions ) {
-      return character._motions.dash.filename;
+    if ( this && this._motionData ) {
+      return this._motionData.motions.dash.filename;
     }
 
     return false;
@@ -1438,19 +1634,18 @@
   }, false );
 
 //-----------------------------------------------------------------------------
-  $.expand( Sprite_Character, 'isDashing', function()
-  { // return if the current character is dashing.
+  $.expand( Game_CharacterBase, 'needsDashMotion', function()
+  { // return if the character needs to use the dash motion.
 //-----------------------------------------------------------------------------
 
-    const character = this._character;
-    let isDashing = character.isDashing();
+    let isDashing = this.isDashing();
 
-    if ( character.constructor.name == 'Game_Follower' ) {
+    if ( this.constructor.name == 'Game_Follower' ) {
       if ( Imported['COLLISION ALTERING PLUGIN'] ) {
         isDashing = this._dashing;
 
       } else {
-        isDashing = $gamePlayer.isDashing();
+        isDashing = this.isDashing();
       }
 
     }
@@ -1459,53 +1654,634 @@
 
   }, false );
 
-//=============================================================================
-  $.expand( Sprite_Character, 'refreshMotion', function ()
-  { // refresh the motion of the character.
-//=============================================================================
+//-----------------------------------------------------------------------------
+  $.expand( Game_CharacterBase, 'getNextMotion', function()
+  { // find the next motion to use.
+//-----------------------------------------------------------------------------
 
-    const character = this._character;
-
-    if ( character && character._motions ) {
-
-      if ( character.isMoving() ) {
-
-        if ( this.isDashing() && this.hasDash() ) {
-          this.startMotion( 'dash' );
-
-        } else {
-          this.startMotion( 'walk' );
-        }
-
-      } else if ( !character.isMoving() && ( character._stopCount > 0 || !character._isMoved ) ) {
-        this.startMotion( 'idle' );
-
-      } else if ( !this._motion ) {
-        this.startMotion( 'idle' );
-
-      }
-
+    let dashing = this.hasDashMotion() && this.needsDashMotion();
+    let idling = this._stopCount > 0;
+    if ( Imported['COLLISION ALTERING PLUGIN'] ) {
+      idling = idling || !this._isMoved;
     }
+    let data = this.getMotion( this._motion );
+    if ( this.isMotionLoop( data.name ) ) return this._motion;
+    if ( this.isJumping() ) return 'jump';
+    if ( this.isOnLadder() ) return 'climb';
+    if ( this.isMoving() && dashing ) return 'dash'
+    if ( this.isMoving() ) return 'walk';
+    if ( !this.isMoving() && idling ) return 'idle'
+    if ( !this._motion ) return 'idle';
 
-  } );
-
-//-----------------------------------------------------------------------------
-  $.expand( Sprite_Character, 'useDefaultPattern', function()
-  { // retrun if we should use the defauult pattern.
-//-----------------------------------------------------------------------------
-
-    if ( this._character.hasMotions() ) return false;
-    return true;
+    return null;
 
   }, false );
 
 //-----------------------------------------------------------------------------
-  $.alias( Sprite_Character, 'characterPatternX', function()
-  { // Aliased characterPatternX of class Sprite_Character.
+  $.expand( Game_CharacterBase, 'refreshMotion', function()
+  { // refresh the motion.
 //-----------------------------------------------------------------------------
 
-    if ( !this.useDefaultPattern() ) {
-      return this._pattern || 0;
+    this._motion = this.getNextMotion() || this._motion;
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.alias( Game_CharacterBase, 'animationWait', function()
+  { // Aliased animationWait of class Game_CharacterBase.
+//-----------------------------------------------------------------------------
+
+    if ( this.hasMotions() ) return this.motionAnimationWait();
+
+    return $.alias();
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Game_CharacterBase, 'motionAnimationWait', function()
+  { // return the show duration for the animation.
+//-----------------------------------------------------------------------------
+
+    let key = "Game_CharacterBase.prototype.animationWait";
+    let alias = Chaucer.charMotions.alias[key];
+
+    let {duration, frames } = this.getMotion( this._motion );
+    let speedMod = this._motionData.speedMod || this._motionData.speed || 0;
+    let moveSpeed = ( 9 - speedMod - this.realMoveSpeed() ) * 3 * frames;
+
+    return duration || moveSpeed;
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.alias( Game_CharacterBase, 'updateAnimationCount', function()
+  { // Aliased updateAnimationCount of class Game_CharacterBase.
+//-----------------------------------------------------------------------------
+
+    if ( this.hasMotions() ) {
+
+      if ( this.isMoving() && this.hasWalkAnime() )
+        $.alias();
+
+      else
+        this.updateMotionAnimationCount();
+
+    } else {
+      $.alias();
+
+    }
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Game_CharacterBase, 'updateMotionAnimationCount', function()
+  { // update the animation count for motion character.
+//-----------------------------------------------------------------------------
+
+    let ignore = this._motion == 'climb' && !this.isMoving();
+    if ( !ignore ) this._animationCount++;
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.alias( Game_CharacterBase, 'pattern', function()
+  { // Aliased pattern of class Game_CharacterBase.
+//-----------------------------------------------------------------------------
+
+    if ( this.hasMotions() ) {
+      return this.motionPattern();
+    } else {
+      return $.alias();
+
+    }
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Game_CharacterBase, 'motionPattern', function()
+  { // return the pattern for the current motion.
+//-----------------------------------------------------------------------------
+
+    return this._pattern;
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Game_CharacterBase, 'isMotionLoop', function( motionName )
+  { // return if the motion is looped.
+//-----------------------------------------------------------------------------
+
+    return this._motionData && this._motionData[motionName] ? this._motionData[motionName].loop : false;
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Game_CharacterBase, 'isMotionPreloaded', function( name )
+  { // return if the motion is preloaded.
+//-----------------------------------------------------------------------------
+
+    if ( name == 'idle' ) return true;
+    if ( name == 'walk' ) return true;
+    if ( name == 'dash' ) return true;
+    if ( name == 'climb' ) return true;
+    if ( name == 'jump' ) return true;
+
+    return this._motionData[name] && this._motionData[name].preload;
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Game_CharacterBase, 'isMotionImportant', function( motion )
+  { // return if the motion is important.
+//-----------------------------------------------------------------------------
+
+    if ( motion.name == 'idle' ) return true;
+    if ( motion.name == 'walk' ) return true;
+    if ( motion.name == 'dash' ) return true;
+    if ( motion.name == 'climb' ) return true;
+    if ( motion.name == 'jump' ) return true;
+
+    return motion.preload;
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Game_CharacterBase, 'getBitmapsFromMotionData', function( motionData )
+  { // Definition.
+//-----------------------------------------------------------------------------
+
+    const keys = Object.keys( motionData );
+    let bitmaps = [];
+
+    for ( let i = 0, l = keys.length; i < l; i++ ) {
+      let motion = motionData[keys[i]];
+      if ( !motion || !motion.filename ) continue;
+      if ( !this.isMotionImportant( motion ) ) continue;
+      bitmaps.push( ImageManager.loadCharacter( motion.filename ) );
+
+    };
+
+    return bitmaps;
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Game_CharacterBase, 'preloadMotionData', function( motionData )
+  { // refresh the motionData.
+//-----------------------------------------------------------------------------
+
+    if ( !motionData ) return this._motionData = null;
+
+    const keys = Object.keys( motionData );
+    let bitmaps = this.getBitmapsFromMotionData( motionData );
+
+    this._motionLoading = true;
+
+    bitmaps.forEach( bitmap => {
+      bitmap.addLoadListener( function() {
+        this._motionLoading = bitmaps.some( b => !b.isReady() );
+        if ( !this._motionLoading ) {
+          this._motionData = JsonEx.parse( JsonEx.stringify( motionData ) );
+          this.applyVisuSmoothing( bitmaps );
+        }
+      }.bind( this ) );
+    } );
+
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Game_CharacterBase, 'applyVisuSmoothing', function( bitmaps )
+  { // apply smoothing to bitmaps frm VisuMZ_1_EventsMoveCore.
+//-----------------------------------------------------------------------------
+
+    if ( Imported.VisuMZ_1_EventsMoveCore ) {
+
+      const settings = VisuMZ.EventsMoveCore.Settings;
+      const smooth = settings.Movement.BitmapSmoothing;
+
+      bitmaps.forEach( bitmap => { bitmap.smooth = smooth; } );
+
+    }
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Game_CharacterBase, 'hasMotions', function()
+  { // return if the character has motions setup.
+//-----------------------------------------------------------------------------
+
+    return !!this._motionData;
+
+  }, false );
+
+//=============================================================================
+  $.expand( Game_CharacterBase, 'isCustomMotion', function( motion )
+  { // return if the character is using a custom motion.
+//=============================================================================
+
+    if ( !this._motionData ) return false;
+    if ( motion == 'idle' ) return false;
+    if ( motion == 'walk' ) return false;
+    if ( motion == 'dash' ) return false;
+    if ( motion == 'climb' ) return false;
+    if ( motion == 'jump' ) return false;
+
+    return !!motion;
+
+  } );
+
+//-----------------------------------------------------------------------------
+  $.alias( Game_CharacterBase , 'getTraction', function()
+  { // Aliased getTraction of class Game_CharacterBase .
+//-----------------------------------------------------------------------------
+
+    let traction = $.alias();
+
+    if ( this.isCustomMotion( this._motion ) ) {
+      const data = this._motionData[this._motion];
+      if ( data ) traction *= data.traction;
+    }
+
+    return traction;
+
+  }, false );
+
+if ( !Imported["COLLISION ALTERING PLUGIN"] ) {
+
+//-----------------------------------------------------------------------------
+  $.expand( Game_CharacterBase, 'is8DirSprite', function()
+  { // set whether this sprite is 8 directoinal, for non collision plugin.
+//-----------------------------------------------------------------------------
+
+    if ( Imported['COLLISION ALTERING PLUGIN'] ) {
+      if ( this._8dirSprite ) return this._8dirSprite;
+    }
+
+    return this._motionData ? this._motionData.dir8 : false;
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.alias( Game_CharacterBase, 'moveDiagonally', function( horz, vert )
+  { // Aliased moveDiagonally of class Game_CharacterBase.
+//-----------------------------------------------------------------------------
+
+    $.alias( horz, vert );
+
+    if ( this.is8DirSprite() ) {
+      if ( horz == 4 && vert == 8 ) this.setDirection( 7 );
+      if ( horz == 4 && vert == 2 ) this.setDirection( 1 );
+      if ( horz == 6 && vert == 8 ) this.setDirection( 9 );
+      if ( horz == 6 && vert == 2 ) this.setDirection( 3 );
+    }
+
+  }, false );
+
+//=============================================================================
+// Game_Player :
+//=============================================================================
+
+//-----------------------------------------------------------------------------
+  $.alias( Game_Player, 'getInputDirection', function()
+  { // Aliased getInputDirection of class Game_Player.
+//-----------------------------------------------------------------------------
+
+    if ( this.is8DirSprite() ) return Input.dir8;
+    return $.alias();
+
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.alias( Game_Player, 'executeMove', function( direction )
+  { // Aliased executeMove of class Game_Player.
+//-----------------------------------------------------------------------------
+
+    if ( ( direction % 2 ) == 1 ) {
+      const horz = [7, 1].includes( direction ) ? 4 : 6;
+      const vert = [7, 9].includes( direction ) ? 8 : 2;
+      this.moveDiagonally( horz, vert );
+
+    } else {
+      $.alias( direction );
+
+    }
+
+
+  }, false );
+
+}
+
+//-----------------------------------------------------------------------------
+  $.expand( Game_Player, 'actor', function()
+  { // return the actor that is currently the party leader.
+//-----------------------------------------------------------------------------
+
+    return $gameParty.leader();
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Game_Player, 'initialMotionData', function()
+  { // return animation data specific to the party leader.
+//-----------------------------------------------------------------------------
+
+    const actor = this.actor();
+    let motionData = actor ? actor._motionData : null;
+    let conditionals = motionData ? motionData.conditionalMotionData : [];
+    let conditional = conditionals.find( c => $gameSwitches.value( c.switch ) );
+
+    if ( conditional ) {
+      motionData = $.findMotionData( conditional.name || '' ) || motionData;
+    }
+
+    return motionData;
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.alias( Game_Player, 'canMove', function()
+  { // Aliased canMove of class Game_Player.
+//-----------------------------------------------------------------------------
+
+    if ( this.isCustomMotion( this._motion ) ) return false;
+    if ( this.isCustomMotion( this._requestedMotion ) ) return false;
+
+    return $.alias();
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.alias( Game_Player, 'refresh', function()
+  { // Aliased refresh of class Game_Player.
+//-----------------------------------------------------------------------------
+
+    $.alias();
+    this.refreshMotionData();
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.alias( Game_Player, 'setMotionData', function( data )
+  { // Aliased setMotionData of class Game_Player.
+//-----------------------------------------------------------------------------
+
+    // $.alias();
+    if ( this.actor() ) {
+      let name0 = this._motionData ? this._motionData.name : '';
+      let name1 = data ? data.name : '';
+      let changed = name0 != name1;
+
+      this.actor().setMotionData( data );
+
+      if ( changed ) this.refreshMotionData();
+    }
+
+  }, false );
+
+//=============================================================================
+// Game_Follower :
+//=============================================================================
+
+//-----------------------------------------------------------------------------
+  $.alias( Game_Follower, 'refresh', function()
+  { // Aliased refresh of class Game_Follower.
+//-----------------------------------------------------------------------------
+
+    $.alias();
+    this.refreshMotionData();
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Game_Follower, 'initialMotionData', function()
+  { // return animation data for the character.
+//-----------------------------------------------------------------------------
+
+    const memberIndex = this._memberIndex;
+    const actor = $gameParty.members()[memberIndex];
+    let motionData = actor ? actor._motionData : null;
+    let conditionals = motionData ? motionData.conditionalMotionData : [];
+    let conditional = conditionals.find( c => $gameSwitches.value( c.switch ) );
+
+    if ( conditional ) {
+      motionData = $.findMotionData( conditional.name || '' ) || motionData;
+    }
+
+    return motionData;
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.alias( Game_Follower, 'setMotionData', function( data )
+  { // Aliased setMotionData of class Game_Follower.
+//-----------------------------------------------------------------------------
+
+    // $.alias();
+    if ( this.actor() ) {
+
+      let name0 = this._motionData ? this._motionData.name : '';
+      let name1 = data ? data.name : '';
+      let changed = name0 != name1;
+
+      this.actor().setMotionData( data );
+      if ( changed ) this.refreshMotionData();
+
+    }
+
+  }, false );
+
+//=============================================================================
+// Game-Event :
+//=============================================================================
+
+//-----------------------------------------------------------------------------
+  $.alias( Game_Event, 'initMembers', function()
+  { // Aliased initMembers of class Game_Event.
+//-----------------------------------------------------------------------------
+
+    $.alias();
+    this._motionData = null;
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.alias( Game_Event, 'refresh', function()
+  { // Aliased refresh of class Game_Event.
+//-----------------------------------------------------------------------------
+
+    $.alias();
+    this.refreshMotionData();
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.alias( Game_Event, 'initialMotionData', function()
+  { // Aliased initialMotionData of class Game_Event.
+//-----------------------------------------------------------------------------
+
+    let motionData = this._motionData;
+    let conditionals = motionData ? motionData.conditionalMotionData : [];
+    let conditional = conditionals.find( c => $gameSwitches.value( c.switch ) );
+
+    if ( conditional ) {
+      motionData = $.findMotionData( conditional.name || '' ) || motionData;
+    }
+
+    return motionData;
+
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Game_Event, 'clearPageMotionData', function()
+  { // clear the motion data for this page.
+//-----------------------------------------------------------------------------
+
+    this._motionData = null;
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.alias( Game_Event, 'clearPageSettings', function()
+  { // Aliased clearPageSettings of class Game_Event.
+//-----------------------------------------------------------------------------
+
+    $.alias();
+    this.clearPageMotionData();
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Game_Event, 'requestMotionData', function( motionsName )
+  { // set the motions to the value proviided.
+//-----------------------------------------------------------------------------
+
+    this._motionData = $.findMotionData( motionsName || '' ) || null;
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Game_Event, 'setMotionData', function( data )
+  { // set the motion data.
+//-----------------------------------------------------------------------------
+
+    let name0 = this._motionData ? this._motionData.name : '';
+    let name1 = data ? data.name : '';
+
+    this._motionData = data || null;
+
+    if ( name0 != name1 ) this.refreshMotionData();
+
+  }, false );
+
+//=============================================================================
+  $.expand( Game_Event, 'setNotetagDirection', function( d )
+  { // set the direction specified via note tag.
+//=============================================================================
+
+    this._originalDirection = d;
+    const df = this.directionFix();
+    this.setDirectionFix( false );
+    this.setDiagonalDirection( this._originalDirection );
+    this.setDirectionFix( df );
+
+  }, this );
+
+//-----------------------------------------------------------------------------
+  $.expand( Game_Event, 'setupPageMotionData', function()
+  { // setup motion data for the current page.
+//-----------------------------------------------------------------------------
+
+    const list = this.page() ? this.list() : [];
+
+    for ( let i = 0, l = list.length; i < l; i++ ) {
+
+      const { code, parameters } = list[i];
+      if ( code != 108 && code != 408 ) continue;
+      if ( parameters[0].match( /\<\s*motion_data\s*:\s*(.*?)\s*>/ ) ) {
+        this.requestMotionData( RegExp.$1.trim() );
+
+      } else if ( parameters[0].match( /\<\s*motions\s*:\s*(.*?)\s*>/ ) ) {
+        this.requestMotionData( RegExp.$1.trim() );
+
+      } else if ( parameters[0].match( /\<\s*direction\s*:\s*(\d+)\s*>/ ) ) {
+        this.setNotetagDirection( Number( RegExp.$1 ) );
+
+      }
+
+    };
+
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.alias( Game_Event, 'setupPageSettings', function()
+  { // Aliased setupPageSettings of class Game_Event.
+//-----------------------------------------------------------------------------
+
+    $.alias();
+    this.setupPageMotionData();
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.alias( Game_Event, 'updateSelfMovement', function()
+  { // Aliased updateSelfMovement of class Game_Event.
+//-----------------------------------------------------------------------------
+
+    if ( this.hasMotions() && this.isCustomMotion( this._motion ) ) return;
+
+    $.alias();
+
+  }, false );
+
+//=============================================================================
+// Sprite_Character :
+//=============================================================================
+
+//-----------------------------------------------------------------------------
+  $.alias( Sprite_Character, 'initMembers', function()
+  { // Aliased initMembers of class Sprite_Character.
+//-----------------------------------------------------------------------------
+
+    $.alias();
+    this._motion = 'idle';
+    this._motionImageName = '';
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Sprite_Character, 'hasMotions', function()
+  { // retrun if the character has motions.
+//-----------------------------------------------------------------------------
+
+    return this._character && !!this._character.hasMotions();
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Sprite_Character, 'getMotion', function( motionName )
+  { // return motion entry of the name provided.
+//-----------------------------------------------------------------------------
+
+    return this._character.getMotion( motionName );
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.alias( Sprite_Character, 'isImageChanged', function()
+  { // Aliased isImageChanged of class Sprite_Character.
+//-----------------------------------------------------------------------------
+
+    if ( this.hasMotions() ) {
+      const motion = this.getMotion( this._character._motion );
+      return this._motionImageName != ( motion ? motion.filename : '' );
+
+    } else if ( this._motionImageName ) {
+      this._motionImageName = '';
+      return true;
 
     } else {
       return $.alias();
@@ -1515,17 +2291,202 @@
   }, false );
 
 //-----------------------------------------------------------------------------
+  $.alias( Sprite_Character, 'updateBitmap', function()
+  { // Aliased updateBitmap of class Sprite_Character.
+//-----------------------------------------------------------------------------
+
+    if ( this.hasMotions() && this.isImageChanged() ) {
+      if ( this._motion != this._character._motion ) {
+        this._character.clearMotionBitmap( this._motion );
+        this._motion = this._character._motion;
+      }
+      this._motionImageName = this.getMotion( this._motion ).filename || '';
+      if ( this._motionImageName ) {
+        this.setMotionBitmap()
+      } else {
+        let bitmap = ImageManager.loadCharacter( this._characterName );
+        this._tileId = 0;
+        this._characterName = '';
+        $.alias();
+      }
+
+    } else {
+      $.alias();
+
+    }
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Sprite_Character, 'setMotionBitmap', function()
+  { // set the bitmap for motion.
+//-----------------------------------------------------------------------------
+
+    this.bitmap = ImageManager.loadCharacter( this._motionImageName );
+    this._isBigCharacter = true;
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.alias( Sprite_Character, 'updateOther', function()
+  { // Aliased updateOther of class Sprite_Character.
+//-----------------------------------------------------------------------------
+
+    $.alias();
+    this.updateMotionAnchor();
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Sprite_Character, 'updateMotionAnchor', function()
+  { // update the anchor position of the sprite.
+//-----------------------------------------------------------------------------
+
+    const data = this.getMotion( this._motion );
+
+    if ( data && this.bitmap ) {
+
+      const offset = data.offset || new Point( 0, 0 );
+
+      this.anchor.x = 0.5 + offset.x;
+      this.anchor.y = 1 + offset.y;
+
+    }
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.alias( Sprite_Character, 'updateCharacterFrame', function()
+  { // Aliased updateCharacterFrame of class Sprite_Character.
+//-----------------------------------------------------------------------------
+
+    if ( this.hasMotions() && this._bushDepth > 0 ) {
+      const data = this.getMotion( this._motion );
+      const offset = data.offset || new Point( 0, 0 );
+
+      const pw = this.patternWidth();
+      const ph = this.patternHeight();
+      const sx = (this.characterBlockX() + this.characterPatternX()) * pw;
+      const sy = (this.characterBlockY() + this.characterPatternY()) * ph;
+
+      this.updateHalfBodySprites();
+
+      let oy = ph * offset.y;
+      const d = this._bushDepth - oy;
+
+      this._upperBody.y = -d;
+      this._lowerBody.y = 0;
+      this._upperBody.setFrame(sx, sy, pw, ph - d );
+      this._lowerBody.setFrame(sx, sy + ph - d, pw, d);
+
+      this._upperBody.y -= oy;
+      this._lowerBody.y -= oy;
+
+      this.setFrame(sx, sy, 0, ph);
+
+    } else {
+      $.alias();
+
+    }
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.alias( Sprite_Character, 'characterBlockY', function()
+  { // Aliased characterBlockY of class Sprite_Character.
+//-----------------------------------------------------------------------------
+
+    if ( this._character.is8DirSprite() ) {
+      return this.motionCharacterBlockY();
+    }
+    return $.alias();
+
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Sprite_Character, 'motionCharacterBlockY', function()
+  { // return the character block on the y axis.
+//-----------------------------------------------------------------------------
+
+    return 0;
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.alias( Sprite_Character, 'characterPatternY', function()
+  { // Aliased characterPatternY of class Sprite_Character.
+//-----------------------------------------------------------------------------
+
+    if ( this._character.is8DirSprite() ) {
+      return this.motionCharacterPatternY();
+    }
+    return $.alias();
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Sprite_Character, 'motionCharacterPatternY', function()
+  { // Definition.
+//-----------------------------------------------------------------------------
+
+    const d = this._character.direction();
+    return d - ( d >= 5 ? 2 : 1 );
+
+  }, false );
+
+//-----------------------------------------------------------------------------
   $.alias( Sprite_Character, 'patternWidth', function()
   { // Aliased patternWidth of class Sprite_Character.
 //-----------------------------------------------------------------------------
 
     if ( this.hasMotions() && this.bitmap ) {
-      const data = this.motionData( this._motion );
+      const data = this.getMotion( this._motion ) || { frames: 3 };
       if ( data ) return this.bitmap.width / data.frames;
 
     }
 
     return $.alias();
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.alias( Sprite_Character, 'patternHeight', function()
+  { // Aliased patternHeight of class Sprite_Character.
+//-----------------------------------------------------------------------------
+
+    if ( this._character.is8DirSprite() ) {
+      return this.motionPatternHeight();
+
+    } else {
+      return $.alias();
+
+    }
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Sprite_Character, 'motionPatternHeight', function()
+  { // return pattern height for pixel movement.
+//-----------------------------------------------------------------------------
+
+    if (this._tileId > 0) {
+        return $gameMap.tileHeight();
+
+    } else {
+      return Math.floor( this.bitmap.height / 8 );
+
+    }
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.alias( Sprite_Character, 'isEmptyCharacter', function()
+  { // Aliased isEmptyCharacter of class Sprite_Character.
+//-----------------------------------------------------------------------------
+
+    return $.alias() && !this._motionImageName;
+
 
   }, false );
 
@@ -1567,9 +2528,8 @@
       target = $gameMap.event( this._motionTarget );
 
     waiting = target && target.isCustomMotion( target._motion );
-
     if ( !waiting ) {
-      waiting = target && target.isCustomMotion( target._requestMotion );
+      waiting = target && target.isCustomMotion( target._requestedMotion );
     }
 
     if ( !waiting ) this._motionTarget = undefined;
@@ -1587,7 +2547,12 @@
   { // register command for set_motion_data.
 //-----------------------------------------------------------------------------
 
-    $gamePlayer._motions2 = $.getMotionData( args.name.trim() );
+    let name0 = $gamePlayer._motionData ? $gamePlayer._motionData.name : '';
+    let name1 = ( args.name || '' ).trim();
+
+    if ( name0 != name1 ) {
+      $gamePlayer.setMotionData( $.findMotionData( name1 ) );
+    }
 
   } );
 
@@ -1597,8 +2562,14 @@
 //-----------------------------------------------------------------------------
 
     const event = $gameMap.event( args.id );
+    if ( !event ) return;
 
-    if ( event ) event._motions2 = $.getMotionData( args.name.trim() );
+    let name0 = event._motionData ? event._motionData.name : '';
+    let name1 = ( args.name || '' ).trim();
+
+    if ( name0 != name1 ) {
+      event.setMotionData( $.findMotionData( name1 ) );
+    }
 
   } );
 
@@ -1607,9 +2578,36 @@
   { // register command for set_motion_data.
 //-----------------------------------------------------------------------------
 
-    const follower = $gameParty._followers._data[args.id - 1];
+    const follower = $gamePlayer._followers._data[args.id - 1];
 
-    if ( follower ) follower._motions2 = $.getMotionData( args.motion );
+    if ( !follower ) return;
+
+    let name0 = follower._motionData ? follower._motionData.name : '';
+    let name1 = ( args.name || '' ).trim();
+
+    if ( name0 != name1 ) {
+      follower.setMotionData( $.findMotionData( name1 ) );
+    }
+
+  } );
+
+//-----------------------------------------------------------------------------
+  $.registerPluginCommand( 'set_actor_motion_data', function( args )
+  { // register command for set_motion_data.
+//-----------------------------------------------------------------------------
+
+    const actor = $gameActors.actor( args.id );
+
+    if ( !actor ) return;
+
+    let name0 = actor._motionData ? actor._motionData.name : '';
+    let name1 = ( args.name || '' ).trim();
+    if ( name0 != name1 ) {
+      if ( actor ) {
+        actor.setMotionData( $.findMotionData( name1 ) );
+        $gamePlayer.refresh();
+      }
+    }
 
   } );
 
@@ -1618,9 +2616,9 @@
   { // register command for player_motion.
 //-----------------------------------------------------------------------------
 
-    $gamePlayer.requestMotion( args.motion.trim() )
+    $gamePlayer.requestMotion( ( args.motion || '' ).trim() )
 
-    if ( args.wait ) {
+    if ( eval( args.wait ) && !$gamePlayer.isMotionLoop( args.motion.trim() ) ) {
       this._motionTarget = 0;
       this._waitMode = 'motion';
     }
@@ -1634,9 +2632,9 @@
 
     const event = $gameMap.event( args.id );
 
-    if ( event ) event.requestMotion( args.motion.trim() );
+    if ( event ) event.requestMotion( ( args.motion || '' ).trim() );
 
-    if ( args.wait ) {
+    if ( eval( args.wait ) && !event.isMotionLoop( args.motion.trim() ) ) {
       this._motionTarget = event._eventId;
       this._waitMode = 'motion';
     }
@@ -1650,19 +2648,46 @@
 
     const follower = $gamePlayer._followers._data[args.id - 1];
 
-    if ( follower ) follower.requestMotion( args.motion.trim() );
+    if ( follower ) follower.requestMotion( ( args.motion || '' ).trim() );
 
-    if ( args.wait ) {
+    if ( eval( args.wait ) && !follower.isMotionLoop( args.motion.trim() ) ) {
       this._motionTarget = -args.id;
       this._waitMode = 'motion';
     }
 
   } );
 
-//=============================================================================
-} )( Chaucer.charActions );
-//=============================================================================
+//-----------------------------------------------------------------------------
+  $.registerPluginCommand( 'player_stop_motion', function( args )
+  { // register command for player_stop_motion.
+//-----------------------------------------------------------------------------
 
-// TODO: add jump motion!
-// TODO: add climb motion!
-// TODO: pickup and carry and throw
+    $gamePlayer.stopMotion()
+
+  } );
+
+//-----------------------------------------------------------------------------
+  $.registerPluginCommand( 'event_stop_motion', function( args )
+  { // register command for event_stop_motion.
+//-----------------------------------------------------------------------------
+
+    const event = $gameMap.event( args.id );
+
+    if ( event ) event.stopMotion();
+
+  } );
+
+//-----------------------------------------------------------------------------
+  $.registerPluginCommand( 'follower_stop_motion', function()
+  { // register command for follower_stop_motion.
+//-----------------------------------------------------------------------------
+
+    const follower = $gamePlayer._followers._data[args.id - 1];
+
+    if ( follower ) follower.stopMotion();
+
+  } );
+
+//=============================================================================
+} )( Chaucer.charMotions );
+//=============================================================================
