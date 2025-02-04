@@ -4,7 +4,7 @@
 *
 * @author Chaucer
 *
-* @plugindesc | Skill Tree Builder : Version - 1.0.1 | A GUI for building skill trees in Rosedale Skill Tree Plugin.
+* @plugindesc | Skill Tree Builder : Version - 1.0.2 | A GUI for building skill trees in Rosedale Skill Tree Plugin.
 *
 * @url http://rosedale-studios.com
 *
@@ -65,7 +65,11 @@
 
 * ● Version : 1.0.1
 * ● Date : 18/11/2023
-*   ✩ Fix - Fix issue with resizing grid.
+*   ✩ Fix - issue with resizing grid.
+
+* ● Version : 1.0.2
+* ● Date : 21/02/2024
+*   ✩ Fix - height of node editor window was not scaling properly
 
 
 *============================================================================
@@ -4214,7 +4218,11 @@ class NodeBox extends Sprite
   { // Called on object creation.
 //=============================================================================
     const width = Math.max( Graphics.width / 2, 500 );
-    super( new Bitmap( width, 480 ) );
+    const y = 22 + 56 * 2 + 32;
+    const rows = SceneManager._scene.descriptionWindowRows()
+    const height = y + ( 18 * rows ) + 8 * 2 + 64 + 16;
+
+    super( new Bitmap( width, height ) );
     this.drawBackground();
     this.drawLabels();
     this.createElements();

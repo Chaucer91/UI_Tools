@@ -1890,7 +1890,7 @@ class NoteInputField extends TextInputField
     const textToCaret = line.slice( 0, caretIndex );
 
     let ox = this._textSrc.measureTextWidth( textToCaret ) - this._textX;
-    let oy = index * ( fontSize + 2 );
+    let oy = index * ( fontSize );
 
     this._caret.x = this._padding + ox;
     this._caret.y = oy;
@@ -2685,7 +2685,7 @@ class DropDownField extends ButtonField
 
     super( width, height, '...', settings );
 
-    this.createListField();
+    this.createListField( settings.size );
 
     this._okHandler = null;
     this.data = data;
@@ -2833,13 +2833,13 @@ class DropDownField extends ButtonField
   }
 
 //=============================================================================
-  createListField()
+  createListField( size )
   { // create a list field activated when the button is clicked.
 //=============================================================================
 
     const defaults = DropDownField.listDefaults;
 
-    this._list = new ListField( this.width, 10, this.data, defaults );
+    this._list = new ListField( this.width, size || 10, this.data, defaults );
     this._list.y = this.height;
 
     this._list.visible = false;
@@ -4888,6 +4888,7 @@ window.TextInputField = TextInputField;
       let index = this.getHighestRelativeIndex( h0, h1 );
       const parent = h0[index];
 
+      if ( !parent ) continue;
       const i0 = parent.children.indexOf( h0[index + 1] );
       const i1 = parent.children.indexOf( h1[index + 1] );
 
@@ -5060,6 +5061,72 @@ window.TextInputField = TextInputField;
 
   }
 
+//-----------------------------------------------------------------------------
+  $.windowOptions = function ( id, title, width, height, resizable, alwaysFocused, fullscreen )
+  { // open a file dialog to choose a project.
+//-----------------------------------------------------------------------------
+
+    const options = {};
+    const parentWindow = nw.Window.get();
+
+    options.focus = true;
+    options.width = width || Graphics.width;
+    options.height = height || Graphics.height;
+    options.resizable = resizable || false;
+
+    if ( !options.resizable ) {
+      options.min_width = width;
+      options.max_width = width;
+      options.min_height = height;
+      options.max_height = height;
+    }
+
+    options.position = 'center';
+    options.always_on_top = alwaysFocused || false;
+    return options;
+
+  }
+
+//-----------------------------------------------------------------------------
+  $.openWindow = function ( url, options, cb )
+  { // open a file dialog to choose a project.
+//-----------------------------------------------------------------------------
+
+    // let newWindow = window.open( url, options, cb );
+
+    // return newWindow
+    return nw.Window.open( url, options || {}, cb );
+
+  }
+
+//-----------------------------------------------------------------------------
+  $.openExplorerin = function( dir, callback ) {
+//-----------------------------------------------------------------------------
+
+    const os = require('os');
+
+    var cmd = ``;
+    switch ( os.platform().toLowerCase().replace( /[0-9]/g, `` ).replace( `darwin`, `macos` ) ) {
+        case `win`:
+            dir = dir || '=';
+            cmd = `explorer`;
+            break;
+        case `linux`:
+            dir = dir || '/';
+            cmd = `xdg-open`;
+            break;
+        case `macos`:
+            dir = dir || '/';
+            cmd = `open`;
+            break;
+    }
+    let p = require(`child_process`).spawn( cmd, [dir] );
+    p.on('error', (err) => {
+        p.kill();
+        return callback(err);
+    });
+  }
+
 //=============================================================================
   // MV SPECIFIC CODE :
 //=============================================================================
@@ -5160,6 +5227,48 @@ TouchInput._onMiddleTrigger = function(x, y) {
     }
 
   }, true );
+
+//=============================================================================
+// SceneManager :
+//=============================================================================
+
+//-----------------------------------------------------------------------------
+  $.expand( SceneManager, 'pause', function()
+  { // puase the current scene.
+//-----------------------------------------------------------------------------
+
+    this._paused = true;
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( SceneManager, 'unpause', function()
+  { // unpause the scene.
+//-----------------------------------------------------------------------------
+
+    this._paused = false;
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( SceneManager, 'isPaused', function()
+  { // returnf if the scene is paused.
+//-----------------------------------------------------------------------------
+
+    return window.subWindow;
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.alias( SceneManager, 'updateMain', function()
+  { // Aliased updateMain of class SceneManager.
+//-----------------------------------------------------------------------------
+
+    if ( this.isPaused() ) return;
+    $.alias();
+
+
+  }, false );
 
 //=============================================================================
 // Bitmap :

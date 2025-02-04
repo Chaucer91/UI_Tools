@@ -2425,7 +2425,7 @@ class DropDownField extends ButtonField
   }
 
 //=============================================================================
-  constructor( width, data, listSize, settings = {} )
+  constructor( width, data, settings = {} )
   { // Called on object creation.
 //=============================================================================
 
@@ -2435,7 +2435,7 @@ class DropDownField extends ButtonField
 
     super( width, height, '...', settings );
 
-    this.createListField( listSize );
+    this.createListField();
 
     this._okHandler = null;
     this.data = data;
@@ -2574,13 +2574,13 @@ class DropDownField extends ButtonField
   }
 
 //=============================================================================
-  createListField( listSize = 10 )
+  createListField()
   { // create a list field activated when the button is clicked.
 //=============================================================================
 
     const defaults = DropDownField.listDefaults;
 
-    this._list = new ListField( this.width, listSize, this.data, defaults );
+    this._list = new ListField( this.width, 10, this.data, defaults );
     this._list.y = this.height;
 
     this._list.visible = false;
@@ -3397,7 +3397,7 @@ class ListField extends Sprite
 }
 
 //=============================================================================
-// ExpandingListField
+// ListField
 //=============================================================================
 
 //=============================================================================
@@ -3799,125 +3799,6 @@ class ScrollBarVert extends Sprite
   }
 
 }
-
-//=============================================================================
-// ButtonListField :
-//=============================================================================
-
-//=============================================================================
-class ButtonListField extends ListField
-{ // ButtonListField
-
-//=============================================================================
-  constructor( width, maxRows, data )
-  { // Called on object creation.
-//=============================================================================
-
-    super( Math.floor( width ), maxRows, data, { hoverColor: 'grey' } );
-    this.refreshSize();
-    this.refresh();
-  }
-
-//=============================================================================
-  itemHeight()
-  { // return the height of each item in the list.
-//=============================================================================
-
-    return 32;
-
-  }
-
-//=============================================================================
-  itemRect( i )
-  { // return the item rect at the position specified.
-//=============================================================================
-
-    const top = this.topIndex;
-    const sb = this._scrollbar;
-    const ow = this.outlineWidth;
-
-    const width = Math.floor( this.width - ( sb ? sb.width : 0 ) - ow * 2 );
-    const height = this.itemHeight();
-    const x = ow;
-    const y = height * ( i - top );
-
-    return new Rectangle( x, y, width, height );
-
-  }
-
-//=============================================================================
-  refreshCursor()
-  { // refresh the cursor.
-//=============================================================================
-
-    const p = 1;
-    const p2 = 2;
-
-    const color0 = this.hoverColor;
-    const color1 = this.clickColor;
-
-    const { x:x0, y:y0, width:w0, height:h0 } = this.getCursorRect( this.hoverIndex );
-    const { x:x1, y:y1, width:w1, height:h1 } = this.getCursorRect( this.index );
-
-    this.bitmap.drawRoundedRect( x0 + p, y0 + p, w0 - p2, h0 - p2, 4, color0 );
-
-    if ( this.index >= 0 ) {
-      this.bitmap.drawRoundedRect( x1 + p, y1 + p, w1 - p2, h1 - p2, 4, color1 );
-    }
-
-  }
-
-//=============================================================================
-  drawAllItems()
-  { // draw all items.
-//=============================================================================
-
-    const top = this.topIndex;
-    let p = this._padding;
-
-    for ( let i = 0, l = this.maxRows; i <= l; i++ ) {
-      if ( top + i >= this.data.length ) continue;
-      this.drawItemBackground( top + i );
-      this.drawItem( top + i );
-    };
-
-  }
-
-//=============================================================================
-  drawItemBackground( index )
-  { // draw item background for the rectangle provided.
-//=============================================================================
-
-    const { x, y, width, height } = this.itemRect( index );
-    const p = 2;
-    const p2 = 4;
-    const color = '#393f4a';
-
-    this.bitmap.drawRoundedRect( x + p, y + p + 1, width - p2, height - p2, 4, color );
-
-  }
-
-//=============================================================================
-  drawItem( index )
-  { // draw the item at the index specified.
-//=============================================================================
-
-    const item = this.itemAt( index );
-    const { x, y, width, height } = this.itemRect( index );
-    const p = 8;
-    const p2 = p * 2;
-
-    if ( item ) {
-      this.bitmap.drawText( item.name, x + p, y + p, width - p2, height - p2 );
-    }
-
-  }
-
-}
-
-//=============================================================================
-window.ButtonListField = ButtonListField;
-//=============================================================================
 
 //=============================================================================
 class CheckboxField extends TextInputField

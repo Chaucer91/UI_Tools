@@ -156,19 +156,16 @@ class Scene_ProjectSelect extends Scene_Base
     const data = [
       { name: 'Import MV' },
       { name: 'Import MZ' },
-      { name: 'Edit Actor Extras' },
-      { name: 'Edit Enemy Extras' },
-      { name: 'Edit Skill Extras' },
-      { name: 'Edit Item Extras' },
+      { name: 'Edit Character Hitboxes' },
       { name: 'Edit Projectile Patterns' },
-      { name: 'Edit Beam Patterns' },
+      { name: 'Edit Enemy AI' },
       { name: 'Remove Project' },
       { name: 'Exit' },
     ]
     this._optionContainer = new ContainerField( new Rectangle( x, y, w, h ) );
     this.addChild( this._optionContainer );
 
-    const list = new ButtonListField( w, 7, data );
+    const list = new ButtonListField( w, 6, data );
     this._optionContainer.addElement( list );
     this._optionContainer._listField = list;
     // TODO: add resources list here again!
@@ -190,56 +187,22 @@ class Scene_ProjectSelect extends Scene_Base
         case 1: // import MZ
           this.importProjectMZ();
           break;
-        case 2: // Edit Actor Extras
+        case 2: // Edit Character Hitboxes
           $gameTemp._project = this._projectContainer._listField.item();
-          if ( !$gameTemp._project ) {
-            alert( 'please select a project from the list!' );
-          } else {
-            $gameTemp._characterMode = 'Actors';
-            SceneManager.push( Scene_ActorEditor );
-          }
+          SceneManager.goto( Scene_CharacterEditor );
           break;
-        case 3: // Edit Enemy Extras
+        case 3: // Projectile Editor
           $gameTemp._project = this._projectContainer._listField.item();
-          if ( !$gameTemp._project ) {
-            alert( 'please select a project from the list!' );
-          } else {
-            $gameTemp._characterMode = 'Enemies';
-            SceneManager.push( Scene_ActorEditor );
-          }
+          // SceneManager.goto( Scene_ProjectileEditor );
           break;
-        case 4: // Skill Extras
+        case 4: // Enemy AI
           $gameTemp._project = this._projectContainer._listField.item();
-          if ( !$gameTemp._project ) {
-            alert( 'please select a project from the list!' );
-          } else {
-            SceneManager.push( Scene_SkillExtras );
-          }
-          break;
-        case 5: // Item Extras
-          $gameTemp._project = this._projectContainer._listField.item();
-          if ( !$gameTemp._project ) {
-            alert( 'please select a project from the list!' );
-          } else {
-            SceneManager.push( Scene_ItemExtras );
-          }
-          break;
-        case 6: // Projectile Editor
-          $gameTemp._project = this._projectContainer._listField.item();
-          // TODO: add this next!!
-          if ( !$gameTemp._project ) alert( 'This feature is currently unavailable at this time!' );
           // SceneManager.goto( Scene_EnemyAI );
           break;
-        case 7: // Beam Editor
-          $gameTemp._project = this._projectContainer._listField.item();
-          // TODO: add this next!!
-          if ( !$gameTemp._project ) alert( 'This feature is currently unavailable at this time!' );
-          // SceneManager.goto( Scene_EnemyAI );
-          break;
-        case 8: // Remove Project
+        case 5: // Remove Project
           this.removeProject( this._projectContainer._listField.index );
           break;
-        case 9: // Exit Tool
+        case 6: // Exit Tool
           SceneManager.pop();
           break;
         default:
@@ -341,7 +304,7 @@ class Scene_ProjectSelect extends Scene_Base
     const pluginInfo = this.getProjectPluginInfo( directory );
     const engineData = fs.readFileSync( file, { encoding:'utf8', flag:'r' } ).split( ' ' );
     const engine = engineData[0] == 'RPGMZ' ? '\\I[3]\\I[4]' :
-    engineData[0] == 'RPGMV' ? '\\I[1]\\I[2]' : 'Unknown';
+    engnieInfo[0] == 'RPGMV' ? '\\I[1]\\I[2]' : 'Unknown';
     const version = engineData[1];
 
     const project = { engine, version, pluginInfo, name, directory };

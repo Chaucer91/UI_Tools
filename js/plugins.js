@@ -8,5 +8,8 @@ var $plugins =
 {"name":"Rosedale_ABSTool","status":true,"description":"| UI_Tools : Version - 1.0.0 | A plugin that adds easy to use UI tools.","parameters":{}},
 {"name":"Rosedale_ProjectSelect","status":true,"description":"| Project Select Scene : Version - 1.0.0 | Create a project select scene.","parameters":{}},
 {"name":"Rosedate_CharacterEditor","status":true,"description":"| Character Editor Scene : Version - 1.0.0 | Add the character editor scene.","parameters":{}},
-{"name":"Rosedale_CharacterMotions","status":true,"description":"| Character Actions : Version - 1.2.1 | Add actin animaitions to your characters.","parameters":{"motionData":"[]"}}
+{"name":"Rosedale_CharacterMotions","status":true,"description":"| Character Motions : Version - 3.0.7 | Add motion( or action ) animaitions to your characters.","parameters":{"motionData":"[]"}},
+{"name":"Rosedate_ActorEditor","status":true,"description":"| Actor Editor : Version - 1.0.0 | Actor editor scene.","parameters":{}},
+{"name":"Rosedale_SkillExtras","status":true,"description":"| Scene Skill Extras : Version - 1.0.0 | Scene for extra skill variables.","parameters":{}},
+{"name":"Rosedale_ItemExtras","status":true,"description":"| Scene Item Extras : Version - 1.0.0 | Scene for extra item variables.","parameters":{}}
 ];

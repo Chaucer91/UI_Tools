@@ -1384,7 +1384,6 @@ if ( Utils.RPGMAKER_NAME == 'MV' ) {
 
       let ox = ( data.x || 0 ) / width;
       let oy = ( data.y || 0 ) / height;
-
       data.offset = new Point( isNaN( ox ) ? 0 : ox, isNaN( oy ) ? 0 : oy )
 
     }
@@ -2277,7 +2276,7 @@ if ( !Imported["COLLISION ALTERING PLUGIN"] ) {
 
     if ( this.hasMotions() ) {
       const motion = this.getMotion( this._character._motion );
-      return this._motionImageName != ( motion ? motion.filename : '' );
+      return this._motionImageName != ( motion ? motion.filename : '' ) || !this.bitmap;
 
     } else if ( this._motionImageName ) {
       this._motionImageName = '';
@@ -2345,11 +2344,15 @@ if ( !Imported["COLLISION ALTERING PLUGIN"] ) {
     const data = this.getMotion( this._motion );
 
     if ( data && this.bitmap ) {
+      const dir8 = this.is8DirSprite();
+      const bigChar = ImageManager.isBigCharacter( data.filename );
+      const width = this.bitmap.width / data.frames;
+      const height = this.bitmap.height / ( ( dir8 || !bigChar ) ? 8 : 4 )
 
       const offset = data.offset || new Point( 0, 0 );
 
-      this.anchor.x = 0.5 + offset.x;
-      this.anchor.y = 1 + offset.y;
+      this.anchor.x = 0.5 + offset.x / width;
+      this.anchor.y = 1 + offset.y / height;
 
     }
 
@@ -2442,7 +2445,8 @@ if ( !Imported["COLLISION ALTERING PLUGIN"] ) {
 
     if ( this.hasMotions() && this.bitmap ) {
       const data = this.getMotion( this._motion ) || { frames: 3 };
-      if ( data ) return this.bitmap.width / data.frames;
+      const bitmap = this.bitmap;
+      if ( data ) return ( bitmap ? bitmap.width : 0 ) / data.frames;
 
     }
 

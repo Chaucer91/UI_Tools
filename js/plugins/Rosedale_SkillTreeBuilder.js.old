@@ -4,7 +4,7 @@
 *
 * @author Chaucer
 *
-* @plugindesc | UI_Tools : Version - 1.0.0 | A plugin that adds easy to use UI tools.
+* @plugindesc | Skill Tree Builder : Version - 1.0.1 | A GUI for building skill trees in Rosedale Skill Tree Plugin.
 *
 * @url http://rosedale-studios.com
 *
@@ -16,14 +16,37 @@
 * ╚════════════════════════════════════╝
 
 *============================================================================
-*  Requirements :
-*============================================================================
-
-*============================================================================
 *  Instructions :
 *============================================================================
 
-
+*   It is very important to read this fully to understand the full toolset
+* of this plugin! Please be sure to read the following thoroughly!
+*
+*   Upon entering the editor mode, you will be automatically greeted with a
+* class list. Select the class you wish to create a skill tree for, then at
+* the very bottom of the list, you will see an arrow up, click this to hide
+* the list, and begin building the skill tree.
+*
+*   To add nodes to the tree, click any tile in the grid, you will be
+* prompted with a new node editor window. This window will allow you to
+* specify what skill this node will give access to, as well as how much
+* sp is required to learn the skill and even what level!
+*
+*   After you have created a few nodes, you can make one skill require
+* another before it can be learned by clicking the parent skill, and drag
+* your cursor the the child node! For example, if you want Node B to to
+* only be learnable if Node A is learned then click and hold node A, and
+* drag your mouse to Node B! Node B will bo locked unless Node A has been
+* learned!
+*
+*   You can also remove connections by holding ctrl and clicking a node. For
+* example, if Node B is child to Node A, you can ctrl + left click on Node
+* A and all the child nodes of Node A will be removed!
+*
+*   After your done building your skill tree's it's IMPORTANT to REMOVE this
+* plugin BEFORE exporting your game! If you do not remove this plugin before
+* your game is deployed it WILL generate an error. So be warned.
+*
 *============================================================================
 *  Terms Of Use :
 *============================================================================
@@ -39,6 +62,11 @@
 *  ● Version : 1.0.0
 *  ● Date : ${CURRENT_DATE}/$CURRENT_MONTH/$CURRENT_YEAR
 *    ★ Release.
+
+* ● Version : 1.0.1
+* ● Date : 18/11/2023
+*   ✩ Fix - Fix issue with resizing grid.
+
 
 *============================================================================
 *  Contact Me :
@@ -60,179 +88,6 @@
 */
 
 //=============================================================================
-// ContainerField :
-//=============================================================================
-
-//=============================================================================
-class ContainerField extends Sprite
-{ // ContainerField
-
-//=============================================================================
-  static get defaults()
-  { // retrun default settings for text input field.
-//=============================================================================
-
-    return {
-      backgroundColor: "#1a1a1a",
-      outlineColor: '#adafb3',
-      borderRadius: 4
-    };
-
-  }
-
-//=============================================================================
-  constructor( rect )
-  { // Called on object creation.
-//=============================================================================
-
-    super( new Bitmap() );
-    this.create();
-    this.rect = rect;
-
-  }
-
-//=============================================================================
-  get rect()
-  { // set the rectangle that defines the dimensions of the box.
-//=============================================================================
-
-    return this._rect;
-
-  }
-
-//=============================================================================
-  set rect( rect )
-  { // set the rectangle that defines the dimensions of the box.
-//=============================================================================
-
-    this._rect = rect;
-    this.refresh();
-
-  }
-
-//=============================================================================
-  create()
-  { // create the elements of the window.
-//=============================================================================
-
-    this.createBackgrounds();
-    this.createElements();
-
-  }
-
-//=============================================================================
-  createBackgrounds()
-  { // create the background.
-//=============================================================================
-
-    this._backgroundSprite = new Sprite( new Bitmap( 100, 100 ) );
-    this.addChild( this._backgroundSprite );
-
-    this._elementContainer = new Sprite();
-    this.addChild( this._elementContainer );
-
-    this._elementsMask = new Sprite( new Bitmap( 100, 100 ) );
-    this.addChild( this._elementsMask );
-    this._elementContainer.mask = this._elementsMask;
-  }
-
-//=============================================================================
-  createElements()
-  { // create the elements.
-//=============================================================================
-
-    // NOTE: add ui elements here.
-
-  }
-
-//=============================================================================
-  refresh()
-  { // refresh the container.
-//=============================================================================
-
-    const p = 1;
-    const { width:w0, height:h0 } = this._rect;
-
-    const x0 = 0;
-    const y0 = 0;
-
-    const x1 = x0 + p;
-    const y1 = y0 + p;
-    const w1 = w0 - p * 2;
-    const h1 = h0 - p * 2;
-
-    const r = ContainerField.defaults.borderRadius;
-    const c0 = ContainerField.defaults.outlineColor;
-    const c1 = ContainerField.defaults.backgroundColor;
-    const c2 = '#FFFFFF';
-
-    this._backgroundSprite.bitmap.clear();
-    this._backgroundSprite.bitmap.resize( w0, h0 );
-    this._backgroundSprite.width = w0;
-    this._backgroundSprite.height = h0;
-    this._backgroundSprite.bitmap.drawRoundedRect( x0, y0, w0, h0, r, c0 );
-    this._backgroundSprite.bitmap.drawRoundedRect( x1, y1, w1, h1, r, c1 );
-
-    this._elementsMask.bitmap.clear();
-    this._elementsMask.bitmap.resize( w0, h0 );
-    this._elementsMask.width = w0;
-    this._elementsMask.height = h0;
-    this._elementsMask.bitmap.drawRoundedRect( x1, y1, w1, h1, r, c2 );
-
-  }
-
-//=============================================================================
-  update()
-  { // update the container.
-//=============================================================================
-
-    super.update();
-    this.updateResize();
-
-  }
-
-//=============================================================================
-  updateResize()
-  { // update resize.
-//=============================================================================
-
-    const { x, y, width, height } = this;
-
-    if ( width != this._rect.width ) {
-      this.rect = new Rectangle( x, y, this._rect.width, this._rect.height );
-
-    } else if ( height != this._rect.height ) {
-      this.rect = new Rectangle( x, y, this._rect.width, this._rect.height );
-
-    }
-
-  }
-
-//=============================================================================
-  addElement( element )
-  { // add an element to the  window.
-//=============================================================================
-
-    this._elementContainer.addChild( element );
-
-  }
-
-//=============================================================================
-  removeElement( element )
-  { // remove an element from the window.
-//=============================================================================
-
-    this._elementContainer.removeChild( element );
-
-  }
-
-}
-
-//=============================================================================
-window.ContainerField = ContainerField;
-//=============================================================================
-
-//=============================================================================
 // TextInputField :
 //=============================================================================
 
@@ -244,7 +99,7 @@ window.ContainerField = ContainerField;
 * borderRadius: the radius of the rounded corners( 0 for non-rounded )
 * textColor: the color of the text.
 * fontSize: the size of the font.
-* fontFace: the name of the font used.
+* fontFace: tsans-serifhe name of the font used.
 * maxCharacters: the maximum amount of characters allowed.
 * minCharacters: the mminimum amount of characters allowed.
 *
@@ -271,7 +126,6 @@ class TextInputField extends Sprite
       borderRadius: 4,
       fontSize: 18,
       fontFace: 'sans-serif',
-
     }
 
   }
@@ -567,9 +421,9 @@ class TextInputField extends Sprite
   { // retunr if we can activate.
 //=============================================================================
 
-    if ( Chaucer.uiTools._activeInputField ) {
-      const previous = Chaucer.uiTools._activeInputField;
-      const parent = Chaucer.uiTools._activeInputField.parent;
+    if ( Chaucer.treeBuilder._activeInputField ) {
+      const previous = Chaucer.treeBuilder._activeInputField;
+      const parent = Chaucer.treeBuilder._activeInputField.parent;
       if ( parent.constructor.name == 'DropDownField' ) {
         if ( previous.visible && previous._active ) {
           return !previous.mouseInBounds();
@@ -587,7 +441,7 @@ class TextInputField extends Sprite
 
     if ( !this._active && this.canActivate() ) {
       this._active = true;
-      Chaucer.uiTools._activeInputField = this;
+      Chaucer.treeBuilder._activeInputField = this;
       this.refresh();
     }
 
@@ -600,8 +454,8 @@ class TextInputField extends Sprite
 
     if ( this._active ) {
       this._active = false;
-      if ( Chaucer.uiTools._activeInputField == this ) {
-        Chaucer.uiTools._activeInputField = null;
+      if ( Chaucer.treeBuilder._activeInputField == this ) {
+        Chaucer.treeBuilder._activeInputField = null;
       }
       this.refresh();
     }
@@ -1411,7 +1265,6 @@ class NumberInputField extends TextInputField
 //=============================================================================
 
     super.refreshBackground();
-    // TODO: add arrows.. and arrow input.
 
   }
 
@@ -2170,9 +2023,9 @@ class ButtonField extends Sprite
   { // retunr if we can activate.
 //=============================================================================
 
-    if ( Chaucer.uiTools._activeInputField ) {
-      const previous = Chaucer.uiTools._activeInputField;
-      const parent = Chaucer.uiTools._activeInputField.parent;
+    if ( Chaucer.treeBuilder._activeInputField ) {
+      const previous = Chaucer.treeBuilder._activeInputField;
+      const parent = Chaucer.treeBuilder._activeInputField.parent;
       if ( parent.constructor.name == 'DropDownField' ) {
         if ( previous.visible && previous._active ) {
           return !previous.mouseInBounds();
@@ -2196,7 +2049,7 @@ class ButtonField extends Sprite
 //=============================================================================
 
     if ( !this._active && this.canActivate() ) {
-      Chaucer.uiTools._activeInputField = this;
+      Chaucer.treeBuilder._activeInputField = this;
       this._active = true;
       this.refresh();
     }
@@ -2209,8 +2062,8 @@ class ButtonField extends Sprite
 //=============================================================================
 
     if ( this._active ) {
-      if ( Chaucer.uiTools._activeInputField == this ) {
-        Chaucer.uiTools._activeInputField = null;
+      if ( Chaucer.treeBuilder._activeInputField == this ) {
+        Chaucer.treeBuilder._activeInputField = null;
       }
       this._active = false;
       this.refresh();
@@ -2425,7 +2278,7 @@ class DropDownField extends ButtonField
   }
 
 //=============================================================================
-  constructor( width, data, listSize, settings = {} )
+  constructor( width, data, settings = {} )
   { // Called on object creation.
 //=============================================================================
 
@@ -2435,7 +2288,7 @@ class DropDownField extends ButtonField
 
     super( width, height, '...', settings );
 
-    this.createListField( listSize );
+    this.createListField();
 
     this._okHandler = null;
     this.data = data;
@@ -2574,13 +2427,13 @@ class DropDownField extends ButtonField
   }
 
 //=============================================================================
-  createListField( listSize = 10 )
+  createListField()
   { // create a list field activated when the button is clicked.
 //=============================================================================
 
     const defaults = DropDownField.listDefaults;
 
-    this._list = new ListField( this.width, listSize, this.data, defaults );
+    this._list = new ListField( this.width, 10, this.data, defaults );
     this._list.y = this.height;
 
     this._list.visible = false;
@@ -3032,7 +2885,7 @@ class ListField extends Sprite
 
     if ( !this._active ) {
       this._active = true;
-      Chaucer.uiTools._activeInputField = this;
+      Chaucer.treeBuilder._activeInputField = this;
       this.refresh();
     }
 
@@ -3045,8 +2898,8 @@ class ListField extends Sprite
 
     if ( this._active ) {
       this._active = false;
-      if ( Chaucer.uiTools._activeInputField == this ) {
-        Chaucer.uiTools._activeInputField = null;
+      if ( Chaucer.treeBuilder._activeInputField == this ) {
+        Chaucer.treeBuilder._activeInputField = null;
       }
       this.refresh();
     }
@@ -3801,125 +3654,6 @@ class ScrollBarVert extends Sprite
 }
 
 //=============================================================================
-// ButtonListField :
-//=============================================================================
-
-//=============================================================================
-class ButtonListField extends ListField
-{ // ButtonListField
-
-//=============================================================================
-  constructor( width, maxRows, data )
-  { // Called on object creation.
-//=============================================================================
-
-    super( Math.floor( width ), maxRows, data, { hoverColor: 'grey' } );
-    this.refreshSize();
-    this.refresh();
-  }
-
-//=============================================================================
-  itemHeight()
-  { // return the height of each item in the list.
-//=============================================================================
-
-    return 32;
-
-  }
-
-//=============================================================================
-  itemRect( i )
-  { // return the item rect at the position specified.
-//=============================================================================
-
-    const top = this.topIndex;
-    const sb = this._scrollbar;
-    const ow = this.outlineWidth;
-
-    const width = Math.floor( this.width - ( sb ? sb.width : 0 ) - ow * 2 );
-    const height = this.itemHeight();
-    const x = ow;
-    const y = height * ( i - top );
-
-    return new Rectangle( x, y, width, height );
-
-  }
-
-//=============================================================================
-  refreshCursor()
-  { // refresh the cursor.
-//=============================================================================
-
-    const p = 1;
-    const p2 = 2;
-
-    const color0 = this.hoverColor;
-    const color1 = this.clickColor;
-
-    const { x:x0, y:y0, width:w0, height:h0 } = this.getCursorRect( this.hoverIndex );
-    const { x:x1, y:y1, width:w1, height:h1 } = this.getCursorRect( this.index );
-
-    this.bitmap.drawRoundedRect( x0 + p, y0 + p, w0 - p2, h0 - p2, 4, color0 );
-
-    if ( this.index >= 0 ) {
-      this.bitmap.drawRoundedRect( x1 + p, y1 + p, w1 - p2, h1 - p2, 4, color1 );
-    }
-
-  }
-
-//=============================================================================
-  drawAllItems()
-  { // draw all items.
-//=============================================================================
-
-    const top = this.topIndex;
-    let p = this._padding;
-
-    for ( let i = 0, l = this.maxRows; i <= l; i++ ) {
-      if ( top + i >= this.data.length ) continue;
-      this.drawItemBackground( top + i );
-      this.drawItem( top + i );
-    };
-
-  }
-
-//=============================================================================
-  drawItemBackground( index )
-  { // draw item background for the rectangle provided.
-//=============================================================================
-
-    const { x, y, width, height } = this.itemRect( index );
-    const p = 2;
-    const p2 = 4;
-    const color = '#393f4a';
-
-    this.bitmap.drawRoundedRect( x + p, y + p + 1, width - p2, height - p2, 4, color );
-
-  }
-
-//=============================================================================
-  drawItem( index )
-  { // draw the item at the index specified.
-//=============================================================================
-
-    const item = this.itemAt( index );
-    const { x, y, width, height } = this.itemRect( index );
-    const p = 8;
-    const p2 = p * 2;
-
-    if ( item ) {
-      this.bitmap.drawText( item.name, x + p, y + p, width - p2, height - p2 );
-    }
-
-  }
-
-}
-
-//=============================================================================
-window.ButtonListField = ButtonListField;
-//=============================================================================
-
-//=============================================================================
 class CheckboxField extends TextInputField
 { // CheckboxField
 
@@ -3958,7 +3692,7 @@ class CheckboxField extends TextInputField
 
     if ( !this._active && this.canActivate() ) {
       this._active = true;
-      Chaucer.uiTools._activeInputField = this;
+      Chaucer.treeBuilder._activeInputField = this;
       this.refresh();
     }
 
@@ -3971,8 +3705,8 @@ class CheckboxField extends TextInputField
 
     if ( this._active ) {
       this._active = false;
-      if ( Chaucer.uiTools._activeInputField == this ) {
-        Chaucer.uiTools._activeInputField = null;
+      if ( Chaucer.treeBuilder._activeInputField == this ) {
+        Chaucer.treeBuilder._activeInputField = null;
       }
       this.refresh();
     }
@@ -4036,11 +3770,932 @@ window.TextInputField = TextInputField;
 //=============================================================================
 
 //=============================================================================
+// Skill_TreeBox
+//=============================================================================
+
+//=============================================================================
+class Skill_TreeBox extends Sprite
+{ // Skill_TreeBox
+
+//=============================================================================
+  constructor()
+  { // Called on object creation.
+//=============================================================================
+
+    super( new Bitmap( Graphics.width / 2, Graphics.height + 32 ) );
+    this._tabSize = { width: 32, height: 32 };
+    this._data = $dataSkillTrees[0];
+    this.x = Graphics.width / 4;
+    this.drawBackground();
+    this.drawLabels();
+    this.createElements();
+
+  }
+
+//=============================================================================
+  drawBackground()
+  { // draw the background.
+//=============================================================================
+
+    const x0 = 0;
+    const y0 = 0;
+    const w0 = Graphics.width;
+    const h0 = Graphics.height;
+
+    const x1 = 2;
+    const y1 = 2;
+    const w1 = Graphics.width - 4;
+    const h1 = Graphics.height - 4
+
+    const radius = 4;
+
+    const color0 = "#181a1f";
+    const color1 = "#20252b";
+
+    this.bitmap.drawRoundedRect( x0, y0, w0, h0, radius, color0 );
+    this.bitmap.drawRoundedRect( x1, y1, w1, h1, radius, color1 );
+
+    const cx = this.width / 2;
+    const cy = Graphics.height;
+    const cRadius = this._tabSize.height;
+
+    this.bitmap.drawCircle( cx, cy, cRadius, color0 );
+
+    const tx = cx - cRadius / 3;
+    const ty = cy - 6;
+    this.bitmap.drawText( "\u2303  ", tx, ty - cRadius / 2, cRadius, cRadius, 'center' );
+    this.bitmap.drawText( "\u2304  ", tx, ty, cRadius, cRadius, 'center' );
+
+  }
+
+//=============================================================================
+  drawLabels()
+  { // draw the labels for stuff.
+//=============================================================================
+
+    // this.bitmap.drawText( 'Tree Name :', 620, 22, 180, 32 );
+    // this.bitmap.drawText( 'Tree Width :', 620, 22 + 56, 180, 32 );
+    // this.bitmap.drawText( 'Tree Height :', 620, 22 + 56 * 2, 180, 32 );
+
+  }
+
+//=============================================================================
+  createElements()
+  { // Definition.
+//=============================================================================
+
+    this.createTreeSelector();
+    // this.createNameEditor();
+    // this.createTreeWidthModifier();
+    // this.createTreeHeightModifier();
+
+    // this.refreshTreeName();
+    // this.refreshTreeWidth();
+    // this.refreshTreeHeight();
+
+  }
+
+//=============================================================================
+  createTreeSelector()
+  { // create the drop down list to select a skill tree.
+//=============================================================================
+
+    this._treeList = new ListField( Graphics.width / 2, 1, $dataClasses, { hoverColor: "#3f7bc7", fontSize: 23 } );
+    this._treeList._hoverable = false;
+    this._treeList.x += 2;
+    this._treeList.y += 3;
+
+    let size = 1;
+    let height = this._treeList.height;
+    let max = this.height - this._tabSize.height * 2;
+
+    while ( height < max ) {
+      size += 1;
+      height = this._treeList.calculateSize( size );
+
+    }
+
+    this._treeList.maxRows = size - 1;
+    this._treeList.refreshSize();
+    this._treeList.refresh();
+
+    this.addChild( this._treeList );
+
+    this._treeList.setOkHandler( this.onTreeListOk.bind( this ) );
+
+
+  }
+
+//=============================================================================
+  onTreeListOk( index )
+  { // when clicking an item.
+//=============================================================================
+
+    if ( !$dataSkillTrees[index] ) {
+      this.addNewTree( index )
+      SceneManager._scene.requestSave();
+
+    } else {
+      this._treeList.activate();
+      let width = Math.floor( ( Graphics.width / 2 ) / ( Chaucer.skillTree.params.gridSize ) );
+
+      if ( width % 2 == 0 ) width--;
+
+      $dataSkillTrees[index].width = width;
+
+      // this._treeName.activate();
+    }
+
+    this.parent._currentTree = $dataSkillTrees[index];
+    this._data = $dataSkillTrees[index];
+    this._treeList.refresh();
+    // this.refreshTreeName();
+    // this.refreshTreeWidth();
+    // this.refreshTreeHeight();
+    this._skillTreeSprite.setData( this._data, true );
+
+
+  }
+
+//=============================================================================
+  addNewTree( index )
+  { // add a new tree at the index specified.
+//=============================================================================
+
+    let width = Math.floor( ( Graphics.width / 2 ) / ( Chaucer.skillTree.params.gridSize ) );
+    let height = 5;
+
+    if ( width % 2 == 0 ) width--;
+
+    $dataSkillTrees[index] = {
+      width: width,
+      height: height,
+      tree: []
+    };
+
+  }
+
+//=============================================================================
+  createNameEditor()
+  { // create the name edit field.
+//=============================================================================
+
+    this._treeName = new TextInputField( 300 );
+    this._treeName.x += 730;
+    this._treeName.y += 20;
+
+    this.refreshTreeName();
+
+    this.addChild( this._treeName );
+
+    this._treeName.setOkHandler( this.onNameChange.bind( this ) );
+    this._treeList.setNextField( this._treeName );
+
+  }
+
+//=============================================================================
+  refreshTreeName()
+  { // refresh the tree name based on the current data.
+//=============================================================================
+
+    this._treeName.text = this._data ? this._data.name : '';
+    this._treeName.refresh();
+
+  }
+
+//=============================================================================
+  onNameChange( name )
+  { // when the name gets changed.
+//=============================================================================
+
+    if ( this._data ) {
+      this._data.name = name;
+      this._treeList.refresh();
+
+      SceneManager._scene.requestSave();
+
+    }
+
+  }
+
+//=============================================================================
+  createTreeWidthModifier()
+  { // create the tree width modifier.
+//=============================================================================
+
+    this._treeWidth = new NumberInputField( 300 );
+
+    this._treeWidth.x += 730;
+    this._treeWidth.y += 20 + 56;
+
+    this.addChild( this._treeWidth );
+
+    this._treeWidth.setOkHandler( this.onWidthChange.bind( this ) );
+    this._treeName.setNextField( this._treeWidth );
+    this.refreshTreeWidth();
+
+  }
+
+//=============================================================================
+  refreshTreeWidth()
+  { // refresh the tree width.
+//=============================================================================
+
+    this._treeWidth.value = Number( this._data ? this._data.width : 0 );
+    this._treeWidth.refresh();
+
+  }
+
+//=============================================================================
+  onWidthChange( width )
+  { // when changing the width of the tree.
+//=============================================================================
+
+    if ( this._data ) {
+      const oldWidth = this._data.width;
+
+      this._data.width = width;
+
+      this.refreshTreeSize();
+
+      this.updateNodeIds( oldWidth, width );
+
+      SceneManager._scene.requestSave();
+
+    }
+
+  }
+
+//=============================================================================
+  updateNodeIds( last, current )
+  { // update the node ids based on the width change.
+//=============================================================================
+
+    const nodes = this.parent._skillTree.allNodes();
+
+
+    for ( let i = 0, l = nodes.length; i < l; i++ ) {
+
+      const row = Math.floor( nodes[i].id / last );
+      const col = ( nodes[i].id % last );
+
+      nodes[i].id = ( row * current ) + col;
+
+      for ( let j = 0, l = nodes[i].parents.length; j < l; j++ ) {
+
+        const row = Math.floor( nodes[i].parents[j] / last );
+        const col = ( nodes[i].parents[j] % last );
+        nodes[i].parents[j] = ( row * current ) + col;
+
+      };
+
+    };
+
+    this.parent._skillTree.refresh();
+
+  }
+
+//=============================================================================
+  createTreeHeightModifier()
+  { // create the tree height modifier.
+//=============================================================================
+
+    this._treeHeight = new NumberInputField( 300 );
+
+    this._treeHeight.x += 730;
+    this._treeHeight.y += 20 + 56 * 2;
+
+    this.addChild( this._treeHeight );
+
+    this._treeHeight.setOkHandler( this.onHeightChange.bind( this ) );
+    this._treeWidth.setNextField( this._treeHeight );
+    this._treeHeight.setNextField( this._treeList );
+    this.refreshTreeHeight();
+
+  }
+
+//=============================================================================
+  refreshTreeHeight()
+  { // refresh the tree height.
+//=============================================================================
+
+    this._treeHeight.value = Number( this._data ? this._data.height : 0 );
+    this._treeHeight.refresh();
+
+  }
+
+//=============================================================================
+  onHeightChange( value )
+  { // when changing the height of the tree.
+//=============================================================================
+
+    if ( this._data ) {
+      this._data.height = value;
+      this.refreshTreeSize();
+
+      SceneManager._scene.requestSave();
+
+    }
+
+  }
+
+//=============================================================================
+  refreshTreeSize()
+  { // refresh the tree size.
+//=============================================================================
+
+    const { width, height, tree } = this._data;
+
+
+    for ( let i = 0, l = height; i < l; i++ ) {
+
+      tree[i] = tree[i] || [];
+
+      while( tree[i].length < width ) { tree[i].push( null ) };
+      while( tree[i].length > width ) { tree[i].pop() };
+
+    };
+
+    this._skillTreeSprite.setData( this._data, true );
+
+  }
+
+//=============================================================================
+  update()
+  { // update the sprite.
+//=============================================================================
+
+    super.update();
+    this.updateTab();
+    this.updateMove();
+  }
+
+//=============================================================================
+  isMoving()
+  { // return if the window is moving.
+//=============================================================================
+
+    return this._lerp;
+
+  }
+
+//=============================================================================
+  updateTab()
+  { // update if the tab is clicked.
+//=============================================================================
+
+    if ( TouchInput.isTriggered() && !this._lerp ) {
+
+      const { x:tx, y:ty } = TouchInput;
+      const x = tx - ( this.x + this.width / 2 );
+      const y = ty - ( this.y + this.height - 32 );
+
+      const radius = this._tabSize.height;
+      const distance = Math.sqrt( x * x + y * y )
+
+      if ( distance < radius ) {
+
+        if ( this.y == 0 ) {
+          this._lerp = {
+            start: new Point( this.x, this.y ),
+            end: new Point( Graphics.width / 4, -Graphics.height ),
+            speed: 1 / 20,
+            value: 0
+          }
+
+        } else if ( this.y == -Graphics.height ) {
+          this._lerp = {
+            start: new Point( this.x, this.y ),
+            end: new Point( Graphics.width / 4, 0 ),
+            speed: 1 / 20,
+            value: 0
+          }
+
+        }
+
+      }
+
+    }
+
+  }
+
+//=============================================================================
+  updateMove()
+  { // update the movement of the window if we have a target position.
+//=============================================================================
+
+    if ( this._lerp ) {
+
+      const { start, end, speed } = this._lerp;
+
+      this._lerp.value = ( this._lerp.value + speed ).clamp( 0, 1 );
+
+      const x = start.x + ( end.x - start.x ) * this._lerp.value;
+      const y = start.y + ( end.y - start.y ) * this._lerp.value;
+      this.position.set( x, y );
+
+      if ( this._lerp.value == 1 ) this._lerp = undefined;
+    }
+
+  }
+
+}
+
+//=============================================================================
+// NodeBox :
+//=============================================================================
+
+//=============================================================================
+class NodeBox extends Sprite
+{ // NodeBox
+
+//=============================================================================
+  constructor()
+  { // Called on object creation.
+//=============================================================================
+    const width = Math.max( Graphics.width / 2, 500 );
+    super( new Bitmap( width, 480 ) );
+    this.drawBackground();
+    this.drawLabels();
+    this.createElements();
+
+  }
+
+//=============================================================================
+  setNode( node = {} )
+  { // set the current node.
+//=============================================================================
+
+    this._orgNode = JsonEx.parse( JsonEx.stringify( node ) );
+    this._node = node;
+
+    this._lerp = {
+      start: new Point( this.x, this.y ),
+      end: new Point( 0, this.y ),
+      speed: 1 / 20,
+      value: 0
+    }
+
+    this.refreshElements();
+
+  }
+
+//=============================================================================
+  refreshElements()
+  { // refresh all elements after a node has been changed.
+//=============================================================================
+
+    this._skillButton.index = this._node.skillId || 0;
+    this._pointsButton.value = this._node.cost || 0;
+    this._levelButton.value = this._node.level || 0;
+    this._descriptionField.text = this._node.description || '';
+
+    this._skillButton.refresh();
+    this._pointsButton.refresh();
+    this._levelButton.refresh();
+    this._descriptionField.refresh();
+
+    this.refreshNodeIcon();
+
+  }
+
+//=============================================================================
+  drawBackground()
+  { // draw the background.
+//=============================================================================
+
+    const x0 = 0;
+    const y0 = 0;
+    const w0 = this.width;
+    const h0 = this.height;
+
+    const x1 = 2;
+    const y1 = 2;
+    const w1 = this.width - 4;
+    const h1 = this.height - 4
+
+    const radius = 4;
+
+    const color0 = "#181a1f";
+    const color1 = "#20252b";
+
+    this.bitmap.drawRoundedRect( x0, y0, w0, h0, radius, color0 );
+    this.bitmap.drawRoundedRect( x1, y1, w1, h1, radius, color1 );
+
+  }
+
+//=============================================================================
+  drawLabels()
+  { // create labels for ui elements.
+//=============================================================================
+
+    this.bitmap.fontFace = 'sans-serif';
+    this.bitmap.fontSize = 18;
+    this.createEventLabel();
+    this.createPointsLabel();
+    this.createLevelLabel();
+    this.createDescriptionLabel();
+
+  }
+
+//=============================================================================
+  createEventLabel()
+  { // create labbel for common event id.
+//=============================================================================
+
+    this.bitmap.drawText( 'Skill : ', 0, 22, 150, 36, 'right' )
+
+  }
+
+//=============================================================================
+  createPointsLabel()
+  { // create a label for the icon index.
+//=============================================================================
+
+    let points = Chaucer.skillTree.params.pointsName;
+    this.bitmap.drawText( `Required ${points} : `, 0, 22 + 56, 150, 36, 'right' );
+    this.refreshNodeIcon();
+
+  }
+
+//=============================================================================
+  refreshNodeIcon()
+  { // refresh the current icon.
+//=============================================================================
+
+    const color0 = "#e2e3e4";
+    const color1 = "#20252b";
+
+    const width = ( ImageManager.iconWidth || Window_Base._iconWidth ) + 4;
+    const height = ( ImageManager.iconHeight || Window_Base._iconHeight ) + 4;
+    const x = 160;
+    const y = 18;
+    this.bitmap.clearRect( x, y, width, height )
+    this.bitmap.fillRect( x, y, width, height, color0 )
+    this.bitmap.clearRect( x + 1, y + 1, width - 2, height - 2 )
+    this.bitmap.fillRect( x + 1, y + 1, width - 2, height - 2, color1 )
+
+    if ( this._node && this._node.skillId ) {
+
+      const src = ImageManager.loadSystem( 'IconSet' );
+      const index = Number( $dataSkills[this._node.skillId].iconIndex );
+      const sw = ImageManager.iconWidth || Window_Base._iconWidth;
+      const sh = ImageManager.iconHeight || Window_Base._iconHeight;
+      const sx = ( index % 16 ) * sw;
+      const sy = Math.floor( index / 16 ) * sh;
+
+      const dx = x + 2
+      const dy = y + 2
+
+      this.bitmap.blt( src, sx, sy, sw, sh, dx, dy );
+
+    }
+
+  }
+
+//=============================================================================
+  createLevelLabel()
+  { // create a loabel for the currency cost.
+//=============================================================================
+
+    const text = 'Required Level : ';
+    const width = 64;
+    this.bitmap.drawText( text, 0, 22 + 56, this.width - width - 22, 36, 'right' );
+
+  }
+
+//=============================================================================
+  createDescriptionLabel()
+  { // create a label for description.
+//=============================================================================
+
+    this.bitmap.drawText( 'Description : ', 0, 22 + 56 * 2, 150, 36, 'right' );
+
+  }
+
+//=============================================================================
+  eraseNode( node )
+  { // erase the node from the tree.
+//=============================================================================
+
+    const { width, tree } = this._skillTreeSprite._data;
+    const allNodes = this._skillTreeSprite.allNodes();
+    const id = node.id;
+
+    const x = ( id % width );
+    const y = Math.floor( id / width );
+
+    tree[y][x] = null;
+
+    // remove all attachments to the node.
+    allNodes.forEach( node => {
+      node.parents = node.parents.filter( n => n != id );
+    } );
+
+  }
+
+//=============================================================================
+  isMoving()
+  { // retrun if the window is moving.
+//=============================================================================
+
+    return this._lerp;
+
+  }
+
+//=============================================================================
+  createElements()
+  { // create all UI elements.
+//=============================================================================
+
+    this.createCancelButton();
+    this.createConfirmButton();
+    this.createDescriptionField();
+    this.createLevelButton();
+    this.createPointsButton();
+    this.createSkillId();
+
+  }
+
+//=============================================================================
+  createCancelButton()
+  { // create the cancel button.
+//=============================================================================
+
+    const settings = {
+      backgroundColor: "#d97fc9",
+      hoverColor: "#db8f99",
+      clickOutlineColor: "#db9f87",
+      clickColor: "#cb6ec2"
+    };
+
+    this._cancelButton = new ButtonField( 100, 32, 'Cancel', settings );
+
+    this._cancelButton.x = ( this.width - 100 ) / 2 + 60
+    this._cancelButton.y = this.height - this._cancelButton.height - 22;
+
+    this.addChild( this._cancelButton );
+
+    this._cancelButton.setClickHandler( this.onCancel.bind( this ) );
+
+  }
+
+//=============================================================================
+  onCancel()
+  { // when the cancel button is clicked.
+//=============================================================================
+
+    Object.assign( this._node, this._orgNode );
+
+    this.parent._descriptionWindow.setText( this._node.description );
+    this.parent._requirementsWindow.setNode( this._node );
+    this._skillTreeSprite.refresh();
+
+    this._lerp = {
+      start: new Point( this.x, this.y ),
+      end: new Point( -this.width, this.y ),
+      speed: 1 / 20,
+      value: 0
+    }
+
+    if ( this._node.skillId == 0 ) {
+      this.eraseNode( this._node );
+    }
+
+    this._skillTreeSprite.refresh();
+
+  }
+
+//=============================================================================
+  createConfirmButton()
+  { // create the confirm button.
+//=============================================================================
+
+    this._confirmButton = new ButtonField( 100, 32, 'Confirm' );
+
+    this._confirmButton.x = ( this.width - 100 ) / 2 - 60
+    this._confirmButton.y = this.height - this._confirmButton.height - 22;
+
+    this._confirmButton.setNextField( this._cancelButton );
+    this.addChild( this._confirmButton );
+
+    this._confirmButton.setClickHandler( this.onConfirm.bind( this ) );
+
+  }
+
+//=============================================================================
+  refreshSize()
+  { // refresh the size of the tree after changes are made.
+//=============================================================================
+
+    let bottom = 0;
+    const data = SceneManager._scene._skillTreeSelectBox._data;
+
+    for ( let i = 0, l = data.height; i < l; i++ ) {
+      if ( data.tree[i] ) {
+        if ( data.tree[i].some( n => !!n ) ) {
+          bottom = i;
+          continue;
+        }
+      };
+
+    };
+
+    data.height = bottom + 5;
+    SceneManager._scene._skillTreeSelectBox.refreshTreeSize();
+
+  }
+
+//=============================================================================
+  onConfirm()
+  { // when the cancel button is clicked.
+//=============================================================================
+
+    this.refreshSize();
+
+    this.parent._descriptionWindow.setText( this._node.description );
+    this.parent._requirementsWindow.setNode( this._node );
+
+    this._skillTreeSprite.refresh();
+
+    this._lerp = {
+      start: new Point( this.x, this.y ),
+      end: new Point( -this.width, this.y ),
+      speed: 1 / 20,
+      value: 0
+    }
+
+    if ( this._node.skillId == 0 ) {
+      this.eraseNode( this._node );
+      this.refreshSize();
+    }
+
+    SceneManager._scene.saveSkillTrees();
+
+  }
+
+//=============================================================================
+  createLevelButton()
+  { // create a input for points.
+//=============================================================================
+
+    const width = 64
+
+    this._levelButton = new NumberInputField( width )
+    this._levelButton.x = this.width - 22 - width;
+    this._levelButton.y = 20 + 56;
+
+    this.addChild( this._levelButton );
+
+    this._levelButton.setNextField( this._descriptionField );
+    this._levelButton.setOkHandler( this.onLevelChange.bind( this ) );
+
+
+  }
+
+//=============================================================================
+  onLevelChange( value )
+  { // after cuyrrencyt requirement changes.
+//=============================================================================
+
+    this._node.level = Number( value );
+    this.parent._requirementsWindow.setNode( this._node );
+
+  }
+
+//=============================================================================
+  createPointsButton()
+  { // create a number input field for the icon index.
+//=============================================================================
+
+    this._pointsButton = new NumberInputField( 64 )
+    this._pointsButton.x = 170;
+    this._pointsButton.y = 20 + 56;
+
+    this.addChild( this._pointsButton );
+
+    this._pointsButton.setNextField( this._levelButton );
+    this._cancelButton.setNextField( this._pointsButton );
+    this._pointsButton.setOkHandler( this.onPointsChange.bind( this ) );
+
+  }
+
+//=============================================================================
+  onPointsChange( value )
+  { // after cuyrrencyt requirement changes.
+//=============================================================================
+
+    this._node.cost = Number( value );
+    this.parent._requirementsWindow.setNode( this._node );
+
+  }
+
+//=============================================================================
+  createSkillId()
+  { // create a common event drop down list.
+//=============================================================================
+
+    const x = 170 + 32 + 12;
+    this._skillButton = new DropDownField( this.width - x - 22, $dataSkills );
+    this._skillButton.x = x;
+    this._skillButton.y = 20;
+
+    this.addChild( this._skillButton );
+
+    this._skillButton.setNextField( this._pointsButton );
+    this._cancelButton.setNextField( this._skillButton );
+    this._skillButton.setOkHandler( this.onSkillChange.bind( this ) );
+
+  }
+
+//=============================================================================
+  onSkillChange( skillId )
+  { // after the event is changed.
+//=============================================================================
+
+    this._node.skillId = Number( skillId );
+    this.parent._nameWindow.setNode( this._node );
+    this._skillTreeSprite.refresh();
+    this.refreshNodeIcon();
+  }
+
+//=============================================================================
+  createDescriptionField()
+  { // create a field for description input.
+//=============================================================================
+
+    const y = 22 + 56 * 2 + 32;
+    const x = 22;
+    const width = this.width - x * 2;
+    const rows = SceneManager._scene.descriptionWindowRows()
+    this._descriptionField = new NoteInputField( width, rows );
+
+    this._descriptionField.x = x;
+    this._descriptionField.y = y;
+
+    this.addChild( this._descriptionField );
+
+    this._descriptionField.setNextField( this._confirmButton );
+    this._descriptionField.setOkHandler( this.onDescriptionChange.bind( this ) );
+
+  }
+
+//=============================================================================
+  onDescriptionChange( text )
+  { // when the description has changed.
+//=============================================================================
+
+    this.parent._descriptionWindow.setText( text );
+    this._node.description = text;
+
+  }
+
+//=============================================================================
+  update()
+  { // update the box.
+//=============================================================================
+
+    super.update();
+    this.updateMove();
+
+  }
+
+//=============================================================================
+  updateMove()
+  { // update the movement of the window if we have a target position.
+//=============================================================================
+
+    if ( this._lerp ) {
+
+      const { start, end, speed } = this._lerp;
+
+      this._lerp.value = ( this._lerp.value + speed ).clamp( 0, 1 );
+
+      const x = start.x + ( end.x - start.x ) * this._lerp.value;
+      const y = start.y + ( end.y - start.y ) * this._lerp.value;
+      this.position.set( x, y );
+
+      if ( this._lerp.value == 1 ) this._lerp = undefined;
+    }
+
+  }
+
+}
+
+//=============================================================================
+window.NodeBox = NodeBox;
+//=============================================================================
+
+//=============================================================================
+window.Skill_TreeBox = Skill_TreeBox;
+//=============================================================================
+
+//=============================================================================
   var Imported = Imported || {};
-  Imported['UI_Tools'.toUpperCase()] = true;
+  Imported['Skill Tree Builder'.toUpperCase()] = true;
 //=============================================================================
   var Chaucer = Chaucer || {};
-  Chaucer.uiTools = {};
+  Chaucer.treeBuilder = {};
 //=============================================================================
 
 ( function ( $ ) { // CONFIG:
@@ -4132,8 +4787,8 @@ window.TextInputField = TextInputField;
     //Create plugin information.
   //============================================================================
 
-    const identifier =  /(UI_Tools) : Version - (\d+.\d+.\d+)/;
-    // $._nameError = 'UI_Tools was unable to load! Please revert any changes back to normal!';
+    const identifier =  /(Skill Tree Builder) : Version - (\d+.\d+.\d+)/;
+    // $._nameError = 'Skill Tree Builder was unable to load! Please revert any changes back to normal!';
 
 
     Chaucer.makePluginInfo( $, identifier );
@@ -4148,7 +4803,30 @@ window.TextInputField = TextInputField;
 //-----------------------------------------------------------------------------
 
     if ( $._activeInputField && $._activeInputField.updateInput ) {
-      $._activeInputField.updateInput( event );
+
+      if ( event.key == 'Tab' ) {
+
+        const nextField = $._activeInputField._nextField;
+        const previousField = $._activeInputField._previousField;
+
+        if ( event.shiftKey ) {
+
+          if ( previousField ) {
+            $._activeInputField.deactivate();
+            previousField.activate();
+          }
+
+        } else {
+          if ( nextField ) {
+            $._activeInputField.deactivate();
+            nextField.activate();
+          }
+
+        }
+      } else {
+        $._activeInputField.updateInput( event );
+
+      }
     }
 
   };
@@ -4206,21 +4884,6 @@ window.TextInputField = TextInputField;
 
   };
 
-//-----------------------------------------------------------------------------
-  $.os = function()
-  { // return the current OS.
-//-----------------------------------------------------------------------------
-
-    const os = require('os');
-    let platform = os.platform();
-
-    if ( process.env.WINEPREFIX && platform == 'win32' ) {
-      platform = 'linux';
-    }
-
-    return platform;
-
-  }
 //=============================================================================
   // MV SPECIFIC CODE :
 //=============================================================================
@@ -4245,15 +4908,410 @@ window.TextInputField = TextInputField;
 // ALIASED CODE BELOW THIS LINE!
 //=============================================================================
 
+//=============================================================================
+// Scene_SkillTree :
+//=============================================================================
+
 //-----------------------------------------------------------------------------
-  $.expand( Bitmap, 'loadBase64', function( string )
-  { // Definition.
+  $.alias( Scene_SkillTree, 'initialize', function()
+  { // Aliased initialize of class Scene_SkillTree.
 //-----------------------------------------------------------------------------
 
-    return Bitmap.load( string );
+    $.alias();
+    this._editorMode = true;
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.alias( Scene_SkillTree, 'create', function()
+  { // Aliased create of class Scene_SkillTree.
+//-----------------------------------------------------------------------------
+
+    $.alias();
+    this.createSkillTreeSelectBox();
+    this.createNodeBox();
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Scene_SkillTree, 'createSkillTreeSelectBox', function()
+  { // create a box which lets you select/add skill trees.
+//-----------------------------------------------------------------------------
+
+    this._skillTreeSelectBox = new Skill_TreeBox();
+    this.addChild( this._skillTreeSelectBox );
+
+    this._skillTreeSelectBox._skillTreeSprite = this._skillTree;
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Scene_SkillTree, 'createNodeBox', function()
+  { // create the node editor box.
+//-----------------------------------------------------------------------------
+
+    this._nodeEditorBox = new NodeBox();
+    this.addChild( this._nodeEditorBox );
+
+    this._nodeEditorBox.x = -this._nodeEditorBox.width;
+    this._nodeEditorBox.y = ( Graphics.height - this._nodeEditorBox.height ) / 2;
+
+    this._nodeEditorBox._skillTreeSprite = this._skillTree;
+    this._nodeEditorBox.alpha = 1;
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.alias( Scene_SkillTree, 'updateLeftClickCancel', function()
+  { // Aliased updateLeftClickCancel of class Scene_SkillTree.
+//-----------------------------------------------------------------------------
+
+    // $.alias();
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Scene_SkillTree, 'requestSave', function()
+  { // requst that the data be saved.
+//-----------------------------------------------------------------------------
+
+    this._saveTimer = 45;
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Scene_SkillTree, 'saveSkillTrees', function()
+  { // Aliased saveSkillTrees of class Sprite_SkillTree.
+//-----------------------------------------------------------------------------
+
+    const fs = require( 'fs' );
+
+    const folder = 'data/skilltree/'
+    const dir = folder + 'SkillTree.json';
+    const data = JSON.stringify( $dataSkillTrees );
+
+    fs.writeFileSync( dir, data );
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.alias( Scene_SkillTree, 'update', function()
+  { // Aliased update of class Scene_SkillTree.
+//-----------------------------------------------------------------------------
+
+    $.alias();
+    this.updatesaveRequest();
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Scene_SkillTree, 'updatesaveRequest', function()
+  { // update the save reuqest.
+//-----------------------------------------------------------------------------
+
+    if ( this._saveTimer > 0 ) {
+      this._saveTimer--;
+      if ( this._saveTimer == 0 ) this.saveSkillTrees();
+    }
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.alias( Scene_SkillTree, 'updateExit', function()
+  { // Aliased updateExit of class Scene_SkillTree.
+//-----------------------------------------------------------------------------
+
+    // $.alias();
+
+  }, false );
+
+//=============================================================================
+// Sprite_SkillTree :
+//=============================================================================
+
+//-----------------------------------------------------------------------------
+  $.alias( Sprite_SkillTree, 'initialize', function( bitmap )
+  { // Aliased initialize of class Sprite_SkillTree.
+//-----------------------------------------------------------------------------
+
+    $.alias( bitmap );
+
+    this._editorMode = true;
+    this._gridId = -1;
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.alias( Sprite_SkillTree, 'updateMouse', function()
+  { // Aliased updateMouse of class Sprite_SkillTree.
+//-----------------------------------------------------------------------------
+
+    // $.alias();
+    if ( !this.parent._nodeEditorBox.isMoving() ) {
+      if ( !this.parent._skillTreeSelectBox.isMoving() ) {
+        this.updateEditorClick();
+        this.updateScrollWheel();
+      }
+    }
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.alias( Sprite_SkillTree, 'updateScrollWheel', function()
+  { // Aliased updateScrollWheel of class Sprite_SkillTree.
+//-----------------------------------------------------------------------------
+
+    if ( !this.parent._nodeEditorBox.isMoving() ) {
+      if ( !this.parent._skillTreeSelectBox.isMoving() ) {
+        if ( this.parent._nodeEditorBox.x != 0 ) {
+          if ( this.parent._skillTreeSelectBox.y != 0 ) {
+            $.alias();
+          }
+        }
+      }
+    }
 
 
-  }, true );
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.alias( Sprite_SkillTree, 'updateInput', function()
+  { // Aliased updateInput of class Sprite_SkillTree.
+//-----------------------------------------------------------------------------
+
+    // $.alias();
+
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.alias( Sprite_SkillTree, 'updateCursor', function()
+  { // Aliased updateCursor of class Sprite_SkillTree.
+//-----------------------------------------------------------------------------
+
+    // $.alias();
+    this._cursor.visible = false;
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Sprite_SkillTree, 'createBlankNode', function( id )
+  { // create a new blank node.
+//-----------------------------------------------------------------------------
+
+    return {
+      id: id,
+      skillId: 0,
+      cost: 0,
+      level: 0,
+      description: '',
+      parents: []
+    }
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Sprite_SkillTree, 'getNodeAtIndex', function( index )
+  { // return the node at the index specified.
+//-----------------------------------------------------------------------------
+
+    const { width, height } = this._data;
+    const x = ( index % width );
+    const y = Math.floor( index / width );
+
+    if ( !this._data.tree[y] ) {
+      this._data.tree[y] = [];
+      while ( this._data.tree[y].length < width ) {
+        this._data.tree[y].push( null );
+      }
+    }
+
+    if ( !this._data.tree[y][x] ) {
+      const id = ( y * width ) + x;
+      this._data.tree[y][x] = this.createBlankNode( id );
+    }
+
+    return this._data.tree[y][x];
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Sprite_SkillTree, 'updateEditorClick', function()
+  { // update click from debug.
+//-----------------------------------------------------------------------------
+
+    if ( this._data ) {
+
+      if ( this.parent._skillTreeSelectBox.y == 0 ) return;
+      if ( this.parent._nodeEditorBox.x == 0 ) return;
+
+      const { x:tx, y:ty } = TouchInput;
+      const { x, y } = this;
+      const { width, height, tileSize } = this._data;
+
+      const w = width * tileSize;
+      const h = height * tileSize;
+
+      let id = -1;
+
+      if ( tx > x && tx < x + w && ty > y && ty < y + h ) {
+
+        const ox = tx - x;
+        const oy = ty - y;
+
+        const tileX = Math.floor( ox / tileSize );
+        const tileY = Math.floor( oy / tileSize );
+
+        id = ( tileY * width ) + tileX
+
+      }
+
+      if ( this._gridId != id ) {
+        this._gridId = id;
+        this.refresh();
+      }
+
+      if ( this._gridId >= 0 && TouchInput.isTriggered() ) {
+
+        if ( Input.isPressed( 'control' ) ) {
+          this.removeChildrenNodes( this.nodeFromId( this._gridId ) );
+
+        } else {
+          $._clickId = this._gridId;
+
+        }
+
+      }
+
+      if ( !TouchInput.isPressed() && $._clickId >= 0 ) {
+
+        if ( $._clickId == this._gridId ) {
+          const node = this.getNodeAtIndex( $._clickId );
+          this.parent._nodeEditorBox.setNode( node );
+
+        } else if ( this._gridId >= 0 ) {
+          const parent = this.nodeFromId( $._clickId );
+          const node = this.nodeFromId( this._gridId );
+          if ( parent && node ) {
+            if ( !node.parents.includes( parent.id ) ) {
+              if ( !parent.parents.includes( node.id ) ) {
+                node.parents.push( parent.id );
+                SceneManager._scene.saveSkillTrees();
+              }
+            }
+          }
+
+        }
+
+        $._clickId = -1;
+        this.refresh();
+
+      }
+    }
+
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.alias( Sprite_SkillTree, 'drawConnectors', function()
+  { // Aliased drawConnectors of class Sprite_SkillTree.
+//-----------------------------------------------------------------------------
+
+    $.alias();
+    if ( this.nodeFromId( $._clickId ) ) {
+      this.drawDragConnection( this.nodeFromId( $._clickId ) );
+    }
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Sprite_SkillTree, 'drawDragConnection', function( parent )
+  { // draw connection from dragging via mouse.
+//-----------------------------------------------------------------------------
+
+    const node = this.nodeFromId( this._gridId );
+
+    if ( parent == node || parent == null || this._gridId == -1 ) return;
+
+    let enabled = true;
+
+    if ( node == null ) enabled = false;
+    if ( enabled && node.parents.includes( parent.id ) ) enabled = false;
+    if ( enabled && parent.parents.includes( node.id ) ) enabled = false;
+
+    const color0 = !enabled ? '#773333' : '#ff7700'
+    const color1 = !enabled ? '#b50000' : '#cfb634'
+
+    const p0 = this.getNodePosition( this._gridId );
+
+    const iw = ( ImageManager.iconWidth || Window_Base._iconWidth ) / 2 + 8;
+    const ih = ( ImageManager.iconHeight || Window_Base._iconHeight ) / 2 + 8;
+
+    const radius = Math.sqrt( iw * iw, ih * ih );
+
+    const p1 = this.getNodePosition( parent.id );
+
+    const dist = new Point( p0.x - p1.x, p0.y - p1.y );
+    const mag = Math.sqrt( dist.x * dist.x + dist.y * dist.y );
+    const uVec = new Point( dist.x / mag, dist.y / mag );
+    const width = 6;
+
+    const ox = uVec.x * radius;
+    const oy = uVec.y * radius;
+
+    const x0 = p1.x + ox;
+    const y0 = p1.y + oy;
+    const x1 = p0.x - ox;
+    const y1 = p0.y - oy;
+
+    this.bitmap.paintOpacity = 100;
+    this.bitmap.drawArrow( x0, y0, x1, y1, width, color0 );
+
+    const x2 = x0 + uVec.x;
+    const y2 = y0 + uVec.y;
+    const x3 = x1 - uVec.x * 2;
+    const y3 = y1 - uVec.y * 2;
+
+    this.bitmap.drawArrow( x2, y2, x3, y3, width - 2, color1 );
+    this.bitmap.paintOpacity = 255;
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.expand( Sprite_SkillTree, 'removeChildrenNodes', function( parent )
+  { // remove the children nodes.
+//-----------------------------------------------------------------------------
+
+    if ( !parent ) return;
+
+    const allNodes = this.allNodes()
+    allNodes.forEach( node => {
+      node.parents = node.parents.filter( id => id != parent.id );
+    } );
+
+    this.refresh();
+
+  }, false );
+
+//-----------------------------------------------------------------------------
+  $.alias( Sprite_SkillTree, 'refreshWindows', function()
+  { // Aliased refreshWindows of class Sprite_SkillTree.
+//-----------------------------------------------------------------------------
+
+    // $.alias();
+    if ( this.parent && this._data ) {
+      const node = this.nodeFromId( this._gridId );
+      this.parent._nameWindow.setNode( node );
+      this.parent._requirementsWindow.setNode( node );
+      this.parent._descriptionWindow.setText( node ? node.description : '' );
+    }
+
+
+  }, false );
+
+//=============================================================================
+// Bitmap :
+//=============================================================================
 
 //-----------------------------------------------------------------------------
   $.expand( Bitmap, 'drawRoundedRect', function( x, y, width, height, radius, color )
@@ -4270,18 +5328,58 @@ window.TextInputField = TextInputField;
 
       };
 
-      this.clearRect( x + radius, y, width - circ, height );
-      this.clearRect( x, y + radius, width, height - circ );
-
-      this.fillRect( x + radius, y, width - circ, height, color );
-      this.clearRect( x, y + radius, width, height - circ );
-      this.fillRect( x, y + radius, width, height - circ, color );
+      this.clearRect( radius, y, width - circ, height );
+      this.clearRect( x, radius, width, height - circ );
+      this.fillRect( radius, y, width - circ, height, color );
+      this.clearRect( x, radius, width, height - circ );
+      this.fillRect( x, radius, width, height - circ, color );
 
   }, false );
-
 
   window.addEventListener('keydown', $.processKeyInput.bind( $ ) );
 
 //=============================================================================
-} )( Chaucer.uiTools );
+// Scene_Boot :
+//=============================================================================
+
+if ( Utils.RPGMAKER_NAME == 'MV' ) {
+
+//-----------------------------------------------------------------------------
+  $.alias( Scene_Boot, 'start', function()
+  { // Aliased start of class Scene_Boot.
+//-----------------------------------------------------------------------------
+
+    $.alias();
+    this.checkPlayerLocation();
+    DataManager.setupNewGame();
+    SceneManager.goto( Scene_SkillTree );
+    Window_TitleCommand.initCommandPosition();
+
+
+  }, false );
+
+}
+//-----------------------------------------------------------------------------
+  $.alias( Scene_Boot, 'startNormalGame', function()
+  { // Aliased startNormalGame of class Scene_Boot.
+//-----------------------------------------------------------------------------
+
+    // $.alias();
+
+    this.checkPlayerLocation();
+    DataManager.setupNewGame();
+    SceneManager.goto( Scene_SkillTree );
+    Window_TitleCommand.initCommandPosition();
+
+    if ( !$gameTemp.isPlaytest() ) {
+      throw new Error( 'Please remove Rosedale Skill Tree Builder before deploying!' )
+    }
+
+
+  }, false );
+
+//=============================================================================
+
+//=============================================================================
+} )( Chaucer.treeBuilder );
 //=============================================================================
